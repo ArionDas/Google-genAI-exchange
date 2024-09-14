@@ -7,7 +7,7 @@ import { sortingAlgorithms } from './AlgorithmList';
 const SortingVisualizer = ({ initialAlgorithm }) => {
   const [selectedAlgorithm, setSelectedAlgorithm] = useState(initialAlgorithm?.name || sortingAlgorithms[0]?.name);
   const [arraySize, setArraySize] = useState(10);
-  const [speed, setSpeed] = useState(50);
+  const [speed, setSpeed] = useState(40);
   const [array, setArray] = useState([]);
   const [sorting, setSorting] = useState(false);
   const [currentStep, setCurrentStep] = useState(0);
@@ -282,7 +282,7 @@ const SortingVisualizer = ({ initialAlgorithm }) => {
             max={100}
             step={1}
             value={[speed]}
-            onValueChange={handleSpeedChange}
+            onValueChange = {handleSpeedChange}
           />
         </div>
       </div>
