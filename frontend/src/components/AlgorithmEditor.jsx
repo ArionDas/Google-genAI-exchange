@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, Link } from 'react-router-dom';
 import { Button } from "./ui/button";
 import { sortingAlgorithms } from './AlgorithmList';
 import Editor from "@monaco-editor/react";
@@ -9,7 +9,7 @@ const AlgorithmEditor = () => {
   const { algoName } = useParams();
   const navigate = useNavigate();
   const [code, setCode] = useState('');
-  const [language, setLanguage] = useState('javascript');
+  const [language, setLanguage] = useState('cpp');
   const [algorithm, setAlgorithm] = useState(null);
   const [testResult, setTestResult] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -103,6 +103,16 @@ int main() {
   return (
     <div className="container mx-auto mt-8">
       <h1 className="text-3xl font-bold mb-6">{algorithm.name} - Code Editor</h1>
+      
+      <div className="mb-4 flex space-x-4">
+        <Link to={`/visualizer/${algoName}`} className="text-blue-600 hover:underline">
+          Go to Sorting Visualizer
+        </Link>
+        <Link to="/interactive-lessons" className="text-blue-600 hover:underline">
+          Interactive Lessons
+        </Link>
+      </div>
+
       <div className="mb-4">
         <h2 className="text-xl font-semibold mb-2">Pseudocode:</h2>
         <pre className="bg-gray-100 p-4 rounded">{algorithm.pseudocode}</pre>
