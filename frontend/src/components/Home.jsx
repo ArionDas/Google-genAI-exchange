@@ -28,15 +28,17 @@ function Home() {
             <p>Explore a variety of sorting algorithms, from basic to advanced. Our platform adapts to your learning style and progress.</p>
           </CardContent>
         </Card>
-        <Card>
-          <CardHeader>
-            <CardTitle>Interactive Lessons</CardTitle>
-            <CardDescription>Engage with hands-on coding exercises</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <p>Practice implementing sorting algorithms in our interactive code editor. Visualize the sorting process and understand the mechanics behind each algorithm.</p>
-          </CardContent>
-        </Card>
+        <Link to="/visualizer/bubble-sort" className="block">
+          <Card className="cursor-pointer hover:shadow-lg transition-shadow duration-300">
+            <CardHeader>
+              <CardTitle>Interactive Lessons</CardTitle>
+              <CardDescription>Engage with hands-on coding exercises</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <p>Practice implementing sorting algorithms in our interactive code editor. Visualize the sorting process and understand the mechanics behind each algorithm.</p>
+            </CardContent>
+          </Card>
+        </Link>
         <Card>
           <CardHeader>
             <CardTitle>Progress Tracking</CardTitle>
