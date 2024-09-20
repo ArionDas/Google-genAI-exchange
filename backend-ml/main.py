@@ -23,7 +23,12 @@ load_dotenv()
 # Update CORS middleware
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173", "https://google-gen-ai-exchange-git-main-irfaniiitrs-projects.vercel.app"],
+    allow_origins=[
+        "http://localhost:5173",
+        "https://google-gen-ai-exchange-git-main-irfaniiitrs-projects.vercel.app",
+        "https://google-genai-exchange-1.onrender.com",
+        "https://google-gen-ai-exchange.vercel.app"  # Add this line if it's your Vercel domain
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
