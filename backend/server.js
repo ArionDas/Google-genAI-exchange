@@ -23,6 +23,10 @@ app.use('/api/auth', authRoutes);
 app.use('/api/code', codeRoutes);
 app.use('/api/code', codeTestRoutes);
 
+app.get('/',(req,res)=>{
+  res.send('Hello World')
+})
+
 // Start server
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
