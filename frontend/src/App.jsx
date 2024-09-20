@@ -8,6 +8,7 @@ import AlgorithmList from './components/AlgorithmList'
 import AlgorithmEditor from './components/AlgorithmEditor'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import CodeEditor from './components/CodeEditor'
+import SortingVisualizer from './components/SortingVisualizer'
 
 // Create a client
 const queryClient = new QueryClient();
@@ -52,6 +53,7 @@ function App() {
               <Route path="/algorithms" element={<AlgorithmList />} />
               <Route path="/algorithm/:algoName" element={<AlgorithmEditor />} />
               <Route path="/code-editor" element={<CodeEditor />} />
+              <Route path="/visualizer/:algoName" element={<SortingVisualizer />} />
             </Routes>
           </main>
 
