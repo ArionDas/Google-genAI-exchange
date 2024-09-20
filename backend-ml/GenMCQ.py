@@ -6,6 +6,11 @@ from langchain_community.utilities import GoogleSerperAPIWrapper
 from typing import List, Dict
 from dotenv import load_dotenv
 import os
+import logging
+
+# Set up logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 load_dotenv()
 
@@ -32,15 +37,18 @@ def generate_mcqs_with_llm(topic: str, noq: int, level: str) -> List[Dict]:
     human = f"Generate {noq} MCQs on the topic: {topic}"
     prompt = ChatPromptTemplate.from_messages([("system", mcq_system), ("human", human)])
     chain = LLMChain(prompt=prompt, llm=chat)
-    response = chain.run({"topic": topic, "noq": noq, "level": level})
     
     try:
+        response = chain.run({"topic": topic, "noq": noq, "level": level})
+        logger.info(f"LLM Response: {response}")
+        
         mcqs = parse_mcqs_from_response(response)
         if not mcqs:
-            raise ValueError("No MCQs parsed from the LLM response.")
+            logger.warning("No MCQs parsed from the LLM response.")
+            return []
         return mcqs
     except Exception as e:
-        print(f"Error parsing LLM response: {e}")
+        logger.error(f"Error in generate_mcqs_with_llm: {e}")
         return []
 
 def parse_mcqs_from_response(response: str) -> List[Dict]:
@@ -52,30 +60,37 @@ def parse_mcqs_from_response(response: str) -> List[Dict]:
             try:
                 question_part, correct_part = q.split("Correct:")
                 lines = question_part.split("\n")
-                optionss = [line for line in lines if line.strip()[:2] in ['A)', 'B)', 'C)', 'D)']]
-                options = [option.split(") ")[1].strip() for option in optionss]
-                question = question_part.split("\n")[1]
-                answers = options
+                options = [line.split(") ")[1].strip() for line in lines if line.strip()[:2] in ['A)', 'B)', 'C)', 'D)']]
+                question = question_part.split("\n")[1].strip()
                 correct_letter = correct_part.split(")")[0].strip()
                 correct_index = ord(correct_letter) - ord('A')
                 
                 mcqs.append({
                     "question": question,
-                    "options": answers,
+                    "options": options,
                     "correct": correct_index
                 })
             except Exception as e:
-                print(f"Error parsing question: {e}")
+                logger.error(f"Error parsing question: {e}")
     
     return mcqs
 
 def generate_mcqs_with_google_search(topic: str, noq: int) -> List[Dict]:
     search_query = f"multiple choice questions on {topic} with answers"
-    google_search_results = serper.run(search_query)
-    
-    mcqs = []
     try:
-        results = google_search_results.get('results', [])
+        google_search_results = serper.run(search_query)
+        logger.info(f"Google Search Results: {google_search_results}")
+        
+        mcqs = []
+        if isinstance(google_search_results, dict):
+            results = google_search_results.get('organic', [])
+        elif isinstance(google_search_results, str):
+            logger.warning("Google search results returned as string. Unable to parse.")
+            return []
+        else:
+            logger.warning(f"Unexpected type for Google search results: {type(google_search_results)}")
+            return []
+        
         for result in results[:noq]:
             question = result.get('title', 'No question found')
             snippet = result.get('snippet', '')
@@ -84,10 +99,10 @@ def generate_mcqs_with_google_search(topic: str, noq: int) -> List[Dict]:
                 "options": ["Option 1", "Option 2", "Option 3", "Option 4"],
                 "correct": 0
             })
-    except AttributeError:
-        print("Error: Google search results are not in the expected format.")
-    
-    return mcqs
+        return mcqs
+    except Exception as e:
+        logger.error(f"Error in generate_mcqs_with_google_search: {e}")
+        return []
 
 def generate_report(score: int, total: int) -> str:
     report = f"\nYou answered {score} out of {total} questions correctly.\n"
@@ -98,3 +113,14 @@ def generate_report(score: int, total: int) -> str:
     else:
         report += "It looks like you need more practice. Don't worry, you'll get there with more effort! 💪"
     return report
+
+def generate_mcqs(topic: str, noq: int, level: str) -> List[Dict]:
+    mcqs = generate_mcqs_with_llm(topic, noq, level)
+    if not mcqs:
+        logger.info("Falling back to Google Search for generating MCQs...")
+        mcqs = generate_mcqs_with_google_search(topic, noq)
+    
+    if not mcqs:
+        logger.error("Failed to generate MCQs using both LLM and Google Search.")
+    
+    return mcqs
