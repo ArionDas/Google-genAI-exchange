@@ -9,6 +9,9 @@ import AlgorithmEditor from './components/AlgorithmEditor'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import CodeEditor from './components/CodeEditor'
 import SortingVisualizer from './components/SortingVisualizer'
+import AIChat from './components/AIChat'
+import MCQGenerator from './components/MCQGenerator'
+import ResourcesDisplay from './components/ResourcesDisplay'
 
 // Create a client
 const queryClient = new QueryClient();
@@ -29,7 +32,6 @@ function App() {
               <h1 className="text-2xl font-bold text-blue-600">Socrates Learning</h1>
               <div className="space-x-4">
                 <Link to="/"><Button variant="ghost">Home</Button></Link>
-                <Link to="/algorithms"><Button variant="ghost">Algorithms</Button></Link>
                 {user ? (
                   <>
                     <span>Welcome, {user.name}</span>
@@ -54,6 +56,9 @@ function App() {
               <Route path="/algorithm/:algoName" element={<AlgorithmEditor />} />
               <Route path="/code-editor" element={<CodeEditor />} />
               <Route path="/visualizer/:algoName" element={<SortingVisualizer />} />
+              <Route path="/chat" element={<AIChat />} />
+              <Route path="/mcq-generator" element={<MCQGenerator />} />
+              <Route path="/resources" element={<ResourcesDisplay />} />
             </Routes>
           </main>
 
