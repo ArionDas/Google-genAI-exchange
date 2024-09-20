@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import React, { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
 import * as yup from 'yup'
@@ -28,13 +28,27 @@ function Signup({ setUser }) {
     },
   })
 
+
   const onSubmit = async (data) => {
     try {
-      const response = await axios.post(`${process.env.REACT_APP_API_URL}/api/auth/register`, {
+      const uri = `${import.meta.env.VITE_API_URL}/api/auth/register`;
+      console.log('API URL:', uri);
+
+      const config = {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      };
+
+      const body = JSON.stringify({
         name: data.name,
         email: data.email,
-        password: data.password
+        password: data.password,
       });
+
+      const response = await axios.post(uri, body, config);
+
+      console.log('Response:', response);
       
       if (response.data.user) {
         setUser(response.data.user);
@@ -44,6 +58,7 @@ function Signup({ setUser }) {
         setError('Registration failed. Please try again.');
       }
     } catch (error) {
+      console.error('Error details:', error.response?.data || error.message);
       setError(error.response?.data?.message || 'An error occurred during registration.');
     }
   }
