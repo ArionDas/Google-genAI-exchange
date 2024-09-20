@@ -6,6 +6,7 @@ import { useNavigate } from 'react-router-dom'
 import { Button } from "./ui/button"
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "./ui/form"
 import { Input } from "./ui/input"
+import Spinner from "./ui/Spinner"
 import axios from 'axios'
 
 const schema = yup.object().shape({
@@ -15,6 +16,7 @@ const schema = yup.object().shape({
 
 function Login({ setUser }) {
   const [error, setError] = useState('')
+  const [isLoading, setIsLoading] = useState(false)
   const navigate = useNavigate()
   const form = useForm({
     resolver: yupResolver(schema),
@@ -24,8 +26,9 @@ function Login({ setUser }) {
     },
   })
 
-
   const onSubmit = async (data) => {
+    setIsLoading(true)
+    setError('')
     try {
       const uri = `${import.meta.env.VITE_API_URL}/api/auth/login`;
       console.log('API URL:', uri);
@@ -55,6 +58,8 @@ function Login({ setUser }) {
     } catch (error) {
       console.error('Error details:', error.response?.data || error.message);
       setError(error.response?.data?.message || 'An error occurred during login.');
+    } finally {
+      setIsLoading(false)
     }
   }
 
@@ -90,7 +95,16 @@ function Login({ setUser }) {
             )}
           />
           {error && <p className="text-red-500">{error}</p>}
-          <Button type="submit" className="w-full">Login</Button>
+          <Button type="submit" className="w-full" disabled={isLoading}>
+            {isLoading ? (
+              <>
+                <Spinner />
+                <span className="ml-2">Logging in...</span>
+              </>
+            ) : (
+              'Login'
+            )}
+          </Button>
         </form>
       </Form>
     </div>
