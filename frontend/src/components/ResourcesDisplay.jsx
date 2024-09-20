@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import axios from 'axios';
 
 const ResourcesDisplay = () => {
   const [resources, setResources] = useState(null);
@@ -19,21 +20,21 @@ const ResourcesDisplay = () => {
 
   const fetchResources = async (topic) => {
     try {
-      const prefixUrl=`${import.meta.env.VITE_BACKEND_ML_URL}`
-      const response = await fetch(`${prefixUrl}/resources/`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ query: topic }),
-      });
+      setLoading(true);
+      const prefixUrl = `${import.meta.env.VITE_BACKEND_ML_URL}`;
+      const uri = `${prefixUrl}/resources/`;
+      const body = { query: topic };
+      const config = {
+        headers: { 'Content-Type': 'application/json' }
+      };
 
-      if (!response.ok) throw new Error('Failed to fetch resources');
-      const data = await response.json();
-      setResources(data);
+      const response = await axios.post(uri, body, config);
+      
+      setResources(response.data);
       setLoading(false);
-    } catch (err) {
-      setError(err.message);
+    } catch (error) {
+      console.error('Error fetching resources:', error);
+      setError(error.response?.data?.detail || error.message || 'Failed to fetch resources');
       setLoading(false);
     }
   };

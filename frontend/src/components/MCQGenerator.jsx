@@ -6,6 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent } from "@/components/ui/card";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { AlertCircle } from "lucide-react";
+import axios from 'axios';
 
 const MCQGenerator = () => {
   const [topic, setTopic] = useState('');
@@ -22,19 +23,16 @@ const MCQGenerator = () => {
     setIsLoading(true);
     setError(null);
     try {
-      const prefixUrl=`${import.meta.env.VITE_BACKEND_ML_URL}`
-      const response = await fetch(`${prefixUrl}/generate-mcqs`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ topic, noq, level }),
-      });
+      const prefixUrl = `${import.meta.env.VITE_BACKEND_ML_URL}`;
+      const uri = `${prefixUrl}/generate-mcqs`;
+      const body = { topic, noq, level };
+      const config = {
+        headers: { 'Content-Type': 'application/json' }
+      };
+
+      const response = await axios.post(uri, body, config);
       
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.detail || 'Failed to generate MCQs');
-      }
-      
-      const data = await response.json();
+      const data = response.data;
       if (data.mcqs && data.mcqs.length > 0) {
         setMcqs(data.mcqs);
         setUserAnswers({});
@@ -45,7 +43,7 @@ const MCQGenerator = () => {
       }
     } catch (error) {
       console.error('Error generating MCQs:', error);
-      setError(error.message);
+      setError(error.response?.data?.detail || error.message || 'Failed to generate MCQs');
     } finally {
       setIsLoading(false);
     }
