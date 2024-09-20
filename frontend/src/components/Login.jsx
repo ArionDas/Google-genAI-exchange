@@ -6,10 +6,11 @@ import { useNavigate } from 'react-router-dom'
 import { Button } from "./ui/button"
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "./ui/form"
 import { Input } from "./ui/input"
+import axios from 'axios'
 
 const schema = yup.object().shape({
   email: yup.string().email().required(),
-  password: yup.string().min(6).required(),
+  password: yup.string().required(),
 })
 
 function Login({ setUser }) {
@@ -25,56 +26,26 @@ function Login({ setUser }) {
 
   const onSubmit = async (data) => {
     try {
-      const response = await fetch('http://localhost:5000/api/auth/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(data),
+      const response = await axios.post(`${process.env.REACT_APP_API_URL}/api/auth/login`, {
+        email: data.email,
+        password: data.password
       });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message);
+      
+      if (response.data.user) {
+        setUser(response.data.user);
+        localStorage.setItem('token', response.data.token);
+        navigate('/');
+      } else {
+        setError('Login failed. Please try again.');
       }
-
-      const { token } = await response.json();
-      localStorage.setItem('token', token);
-      setUser({ name: data.email.split('@')[0] });
-      navigate('/');
     } catch (error) {
-      setError(error.message);
-    }
-  }
-
-  const onRegister = async (data) => {
-    try {
-      const response = await fetch('http://localhost:5000/api/auth/register', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(data),
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message);
-      }
-
-      const { token, message } = await response.json();
-      localStorage.setItem('token', token);
-      setUser({ name: data.email.split('@')[0] });
-      navigate('/');
-      console.log(message); // Log success message
-    } catch (error) {
-      setError(error.message);
+      setError(error.response?.data?.message || 'An error occurred during login.');
     }
   }
 
   return (
     <div className="max-w-md mx-auto">
-      <h2 className="text-2xl font-bold mb-4">Login or Register</h2>
+      <h2 className="text-2xl font-bold mb-4">Login</h2>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
           <FormField
@@ -105,7 +76,6 @@ function Login({ setUser }) {
           />
           {error && <p className="text-red-500">{error}</p>}
           <Button type="submit" className="w-full">Login</Button>
-          <Button type="button" onClick={form.handleSubmit(onRegister)} className="w-full mt-2">Register</Button>
         </form>
       </Form>
     </div>
