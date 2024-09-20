@@ -23,7 +23,7 @@ load_dotenv()
 # Update CORS middleware
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173"],  # Update this to match your frontend URL
+    allow_origins=["http://localhost:5173","https://google-gen-ai-exchange-git-main-irfaniiitrs-projects.vercel.app/"],  # Update this to match your frontend URL
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

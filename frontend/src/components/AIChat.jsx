@@ -26,7 +26,8 @@ const AIChat = () => {
     setIsLoading(true);
 
     try {
-      const response = await fetch('http://localhost:8000/query', {
+      const prefixUrl=`${import.meta.env.VITE_BACKEND_ML_URL}`
+      const response = await fetch(`${prefixUrl}/query`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

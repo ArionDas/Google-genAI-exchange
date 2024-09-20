@@ -22,7 +22,8 @@ const MCQGenerator = () => {
     setIsLoading(true);
     setError(null);
     try {
-      const response = await fetch('http://localhost:8000/generate-mcqs', {
+      const prefixUrl=`${import.meta.env.VITE_BACKEND_ML_URL}`
+      const response = await fetch(`${prefixUrl}/generate-mcqs`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ topic, noq, level }),

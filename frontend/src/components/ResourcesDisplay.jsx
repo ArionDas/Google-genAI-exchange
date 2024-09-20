@@ -19,7 +19,8 @@ const ResourcesDisplay = () => {
 
   const fetchResources = async (topic) => {
     try {
-      const response = await fetch('http://127.0.0.1:8000/resources/', {
+      const prefixUrl=`${import.meta.env.VITE_BACKEND_ML_URL}`
+      const response = await fetch(`${prefixUrl}/resources/`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
