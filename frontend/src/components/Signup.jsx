@@ -6,6 +6,7 @@ import { useNavigate } from 'react-router-dom'
 import { Button } from "./ui/button"
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "./ui/form"
 import { Input } from "./ui/input"
+import axios from 'axios' // Add this import
 
 const schema = yup.object().shape({
   name: yup.string().required(),
@@ -27,11 +28,24 @@ function Signup({ setUser }) {
     },
   })
 
-  const onSubmit = (data) => {
-    // Here you would typically make an API call to register the user
-    // For this example, we'll just simulate a successful registration
-    setUser({ name: data.name })
-    navigate('/')
+  const onSubmit = async (data) => {
+    try {
+      const response = await axios.post(`${process.env.REACT_APP_API_URL}/api/auth/register`, {
+        name: data.name,
+        email: data.email,
+        password: data.password
+      });
+      
+      if (response.data.user) {
+        setUser(response.data.user);
+        localStorage.setItem('token', response.data.token);
+        navigate('/');
+      } else {
+        setError('Registration failed. Please try again.');
+      }
+    } catch (error) {
+      setError(error.response?.data?.message || 'An error occurred during registration.');
+    }
   }
 
   return (
