@@ -161,6 +161,37 @@ const MCQGenerator = () => {
           <div className="space-y-4">
             <h2 className="text-xl font-semibold">Your Score:</h2>
             <p className="text-lg">{`You answered ${score} out of ${mcqs.length} questions correctly.`}</p>
+            <div className="space-y-4">
+            <h2 className="text-xl font-semibold">Answer the MCQs:</h2>
+            {mcqs.map((mcq, index) => (
+              <Card key={index} className="mb-4">
+                   {/* <h1>{`hi: ${JSON.stringify(userAnswers)}`}</h1> */}
+                <CardContent className="p-4">
+                  <h3 className="text-lg font-semibold mb-2">{`Question ${index + 1}: ${mcq.question}`}</h3>
+                  <RadioGroup
+                    value={userAnswers[index]?.toString()}
+                  >
+                    {mcq.options.map((option, optionIndex) => (
+                      <div key={optionIndex} className="flex items-center space-x-2">
+                        <RadioGroupItem value={optionIndex.toString()} id={`q${index}o${optionIndex}`} />
+                        {optionIndex === mcq.correct &&   <Label  htmlFor={`q${index}o${optionIndex}`} style={{color: 'green'}}>{`${String.fromCharCode(65 + optionIndex)}. ${option}`}</Label>
+                         }
+                      
+
+{optionIndex !== mcq.correct &&  optionIndex===userAnswers[index] &&  <Label  htmlFor={`q${index}o${optionIndex}`} style={{color: 'red'}}>{`${String.fromCharCode(65 + optionIndex)}. ${option}`}</Label>
+                         }
+
+                          {optionIndex !== mcq.correct && optionIndex!==userAnswers[index] &&
+                        <Label  htmlFor={`q${index}o${optionIndex}`}>{`${String.fromCharCode(65 + optionIndex)}. ${option}`}</Label>
+                          }
+                      
+                </div>
+                    ))}
+                  </RadioGroup>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
             <Button onClick={() => setStep(1)}>Generate New MCQs</Button>
           </div>
         );
