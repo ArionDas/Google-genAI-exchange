@@ -8,6 +8,8 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { AlertCircle } from "lucide-react";
 import axios from 'axios';
 
+import { topics } from '@/lib/utils';
+
 const MCQGenerator = () => {
   const [topic, setTopic] = useState('');
   const [noq, setNoq] = useState(5);
@@ -29,6 +31,8 @@ const MCQGenerator = () => {
       const config = {
         headers: { 'Content-Type': 'application/json' }
       };
+
+      console.log('MCQs request:', body);
 
       const response = await axios.post(uri, body, config);
       
@@ -72,12 +76,15 @@ const MCQGenerator = () => {
       case 1:
         return (
           <div className="space-y-4">
-            <h2 className="text-xl font-semibold">Enter the topic for MCQs:</h2>
-            <Input
-              value={topic}
-              onChange={(e) => setTopic(e.target.value)}
-              placeholder="Enter topic"
-            />
+            <h2 className="text-xl font-semibold">Select the topic for MCQs:</h2>
+            <RadioGroup value={topic} onValueChange={(value) => setTopic(value)}>
+              {topics.map((topicItem, index) => (
+          <div key={index} className="flex items-center space-x-2">
+            <RadioGroupItem value={topicItem} id={`topic${index}`} />
+            <Label htmlFor={`topic${index}`}>{topicItem}</Label>
+          </div>
+              ))}
+            </RadioGroup>
             <Button onClick={() => setStep(2)} disabled={!topic}>
               Next
             </Button>

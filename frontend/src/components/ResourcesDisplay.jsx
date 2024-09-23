@@ -29,6 +29,7 @@ const ResourcesDisplay = () => {
       };
 
       const response = await axios.post(uri, body, config);
+      console.log('Resources response:', response.data);
       
       setResources(response.data);
       setLoading(false);
