@@ -14,7 +14,7 @@ const schema = yup.object().shape({
   password: yup.string().required(),
 })
 
-function Login({ setUser }) {
+function Login({ user,setUser }) {
   const [error, setError] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const navigate = useNavigate()
@@ -51,6 +51,15 @@ function Login({ setUser }) {
       if (response.data.user) {
         setUser(response.data.user);
         localStorage.setItem('token', response.data.token);
+       
+        const userInfo = {
+          id: user.id,
+          name: user.name,
+          email: user.email
+        };
+        localStorage.setItem('user', JSON.stringify(userInfo));
+       
+       
         navigate('/');
       } else {
         setError('Login failed. Please try again.');

@@ -60,15 +60,53 @@ const MCQGenerator = () => {
     }));
   };
 
-  const calculateScore = () => {
+  // const calculateScore = () => {
+  //   let correctAnswers = 0;
+  //   mcqs.forEach((mcq, index) => {
+  //     if (userAnswers[index] === mcq.correct) {
+  //       correctAnswers++;
+  //     }
+  //   });
+  //   setScore(correctAnswers);
+  //   setStep(5);
+  // };
+
+  const calculateScore = async () => {
     let correctAnswers = 0;
+  
+    // Calculate the score
     mcqs.forEach((mcq, index) => {
       if (userAnswers[index] === mcq.correct) {
         correctAnswers++;
       }
     });
+  
     setScore(correctAnswers);
     setStep(5);
+  
+    // Fetch user details from localStorage
+    const storedUser = JSON.parse(localStorage.getItem('user'));
+  
+    try {
+      // Call the backend API to update the quiz count for the specific topic
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/auth/update-quizzes/${storedUser.id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ topic }), 
+      });
+  
+      const data = await response.json();
+  
+      if (response.ok) {
+        console.log('Quiz count updated:', data);
+      } else {
+        console.error('Error updating quiz count:', data.message);
+      }
+    } catch (error) {
+      console.error('Error:', error);
+    }
   };
 
   const renderStep = () => {

@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { BrowserRouter as Router, Route, Routes, Link } from 'react-router-dom'
+import { BrowserRouter as Router, Route, Routes, Link, Navigate } from 'react-router-dom'
 import { Button } from "./components/ui/button"
 import Home from './components/Home'
 import Login from './components/Login'
@@ -12,13 +12,16 @@ import SortingVisualizer from './components/SortingVisualizer'
 import AIChat from './components/AIChat'
 import MCQGenerator from './components/MCQGenerator'
 import ResourcesDisplay from './components/ResourcesDisplay'
+import ProfilePage from './components/ProfilePage'
 
 // Create a client
 const queryClient = new QueryClient();
 
 function App() {
-  const [user, setUser] = useState(null)
-
+  const [user, setUser] = useState(() => {
+    const savedUser = localStorage.getItem('user');
+    return savedUser ? JSON.parse(savedUser) : null;
+  });
   const handleLogout = () => {
     setUser(null)
   }
@@ -35,6 +38,8 @@ function App() {
                 {user ? (
                   <>
                     <span>Welcome, {user.name}</span>
+                    <Link to="/profile" > <Button variant="solid">Profile</Button></Link>
+                    
                     <Button variant="ghost" onClick={handleLogout}>Logout</Button>
                   </>
                 ) : (
@@ -50,7 +55,7 @@ function App() {
           <main className="container mx-auto mt-16 px-4">
             <Routes>
               <Route path="/" element={<Home />} />
-              <Route path="/login" element={<Login setUser={setUser} />} />
+              <Route path="/login" element={<Login user={user} setUser={setUser} />} />
               <Route path="/signup" element={<Signup setUser={setUser} />} />
               <Route path="/algorithms" element={<AlgorithmList />} />
               <Route path="/algorithm/:algoName" element={<AlgorithmEditor />} />
@@ -59,6 +64,7 @@ function App() {
               <Route path="/chat" element={<AIChat />} />
               <Route path="/mcq-generator" element={<MCQGenerator />} />
               <Route path="/resources" element={<ResourcesDisplay />} />
+              <Route path="/profile" element={<ProfilePage></ProfilePage>} />
             </Routes>
           </main>
 

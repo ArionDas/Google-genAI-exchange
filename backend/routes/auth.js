@@ -40,6 +40,7 @@ router.post('/register', async (req, res) => {
   }
 });
 
+
 // Login
 router.post('/login', async (req, res) => {
   try {
@@ -59,6 +60,9 @@ router.post('/login', async (req, res) => {
 
     // Create and return JWT token
     const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
+   
+ 
+
     res.json({ token, user: { id: user._id, name: user.name, email: user.email } });
   } catch (error) {
     console.error(error);
@@ -66,4 +70,53 @@ router.post('/login', async (req, res) => {
   }
 });
 
+
+router.put('/update-quizzes/:userId', async (req, res) => {
+  const { userId } = req.params;
+  const { topic } = req.body;  // Pass the DSA topic name in the request body
+
+  console.log('Updating quizzes for user:', userId, 'Topic:', topic);
+
+  try {
+    // Find the user by their ID
+    const user = await User.findById(userId);
+
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    // Increase the number of quizzes taken for the specified topic
+    if (user.dsaTopicsCovered[topic]) {
+      user.dsaTopicsCovered[topic].quizzesTaken += 1;
+    } else {
+      return res.status(400).json({ message: 'Invalid topic' });
+    }
+
+    // Save the updated user data
+    await user.save();
+
+    res.status(200).json({ message: 'Quiz count updated successfully', user });
+  } catch (error) {
+    res.status(500).json({ message: 'Server error', error });
+  }
+});
+
+//api to get user details
+
+router.get('/user/:userId', async (req, res) => {
+  const { userId } = req.params;
+
+  try {
+    const user = await User.findById(userId, '-password -__v');
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+    res.json(user);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
 module.exports = router;
+
