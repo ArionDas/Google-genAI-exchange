@@ -1,4 +1,4 @@
-from fastapi import FastAPI, HTTPException, Query, Body
+from fastapi import FastAPI, HTTPException, Query, Body, UploadFile, File, Form
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import List, Dict, Union
@@ -12,8 +12,12 @@ from langchain.chains import LLMChain
 from dotenv import load_dotenv
 import os
 import logging
+import tempfile
 from GenMCQ import generate_mcqs_with_llm, generate_mcqs_with_google_search, generate_report
-from Resources import search_and_summarize
+from Resources import searchResources
+from fastapi.responses import FileResponse, JSONResponse
+from multimodelHelper import voice_input, llm_model_audio, llm_model_image, llm_model_video, text_to_speech
+
 
 
 # Initialize FastAPI app
@@ -40,6 +44,8 @@ logger = logging.getLogger(__name__)
 # Define your API keys (consider using environment variables for security)
 GROQ_API_KEY = os.getenv('GROQ_API_KEY')
 SERPER_API_KEY = os.getenv('SERPER_API_KEY')
+
+GOOGLE_API_KEY = os.getenv('GOOGLE_API_KEY')
 
 # Initialize tools and models
 chat = ChatGroq(temperature=0.5, groq_api_key=GROQ_API_KEY, model_name="mixtral-8x7b-32768")
@@ -162,10 +168,102 @@ async def generate_mcqs_endpoint(data: MCQRequest):
     return {"mcqs": mcqs}
 
 
-@app.post("/resources/")
-async def search(search_query: SearchQuery):
-    print(f"Received search query: {search_query.query}")
-    return search_and_summarize(search_query.query)
+# @app.post("/resources/")
+# async def search(search_query: SearchQuery):
+#     print(f"Received search query: {search_query.query}")
+#     return search_and_summarize(search_query.query)
+
+
+@app.post("/resources")
+async def search_query(payload: SearchQuery):
+    try:
+        query = payload.query
+        print(f"Received search query: {query}")
+        results = searchResources(query)
+        return results
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+
+
+
+ 
+# Voice Chat Endpoint
+@app.post("/voice-chat")
+async def voice_chat(audio: UploadFile = File(...)):
+    try:
+        # Create a temporary file
+        with tempfile.NamedTemporaryFile(delete=False, suffix=".webm") as temp_file:
+            # Write the uploaded audio to the temporary file
+            temp_file.write(await audio.read())
+            temp_file_path = temp_file.name
+
+        print(f"Temporary file created at: {temp_file_path}")
+        
+        # Process the audio file
+        text = voice_input(temp_file_path)
+        print(f"Transcribed text: {text}")
+        
+        response = llm_model_audio(text)
+        print(f"LLM response: {response}")
+        
+        # Convert response to speech and save the audio file
+        text_to_speech(response)
+        
+        # Clean up the temporary audio file
+        os.unlink(temp_file_path)
+        
+        return JSONResponse(content={"text_response": response}, status_code=200)
+    except Exception as e:
+        print(f"Error in voice chat: {str(e)}")
+        return JSONResponse(content={"error": str(e)}, status_code=500)
+
+# Image + Text + Voice Query Endpoint
+@app.post("/image-query")
+async def image_query(
+    image: UploadFile = File(...),
+    query_text: str = Form(...)
+):
+    print(f"Received image query: {query_text}")
+    # Save the uploaded image
+    image_path = f"temp_image.{image.filename.split('.')[-1]}"
+    with open(image_path, "wb") as f:
+        f.write(await image.read())
+
+    # Use the helper function to process the image + text query
+    response = llm_model_image(query_text, image_path)
+    print(f"Response: {response}")
+    
+    # Convert response to speech and return it
+    text_to_speech(response)
+    return JSONResponse(content={"text_response": response}, status_code=200)
+
+# Video + Text + Voice Query Endpoint
+@app.post("/video-query")
+async def video_query(
+    video: UploadFile = File(...),
+    query_text: str = Form(...)
+):
+    # Save the uploaded video
+    video_path = "temp_video.mp4"
+    with open(video_path, "wb") as f:
+        f.write(await video.read())
+
+    # Use the helper function to process the video + text query
+    response = llm_model_video(query_text, video_path)
+    
+    # Convert response to speech and return it
+    text_to_speech(response)
+    return JSONResponse(content={"text_response": response}, status_code=200)
+
+# Endpoint to download the generated speech file
+@app.get("/download-audio")
+def download_audio():
+    audio_file_path = "speech.mp3"
+    if os.path.exists(audio_file_path):
+        return FileResponse(path=audio_file_path, media_type='audio/mp3', filename="speech.mp3")
+    return JSONResponse(content={"error": "Audio file not found"}, status_code=404)
 
 
 # To run the server: uvicorn main:app --reload

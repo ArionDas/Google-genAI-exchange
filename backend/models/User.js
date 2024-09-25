@@ -4,7 +4,7 @@ const userSchema = new mongoose.Schema({
   name: { type: String, required: true },
   email: { type: String, required: true, unique: true },
   password: { type: String, required: true },
-  
+
   // DSA Progress Tracking
   dsaTopicsCovered: {
     Stacks: { quizzesTaken: { type: Number, default: 0 } },
@@ -29,8 +29,17 @@ const userSchema = new mongoose.Schema({
   },
 
   // Streak tracking
-  streakDays: { type: Number, default: 0 },  // Number of consecutive active days
-  
+  streak: {
+    count: { type: Number, default: 0 },    // Current streak count
+    lastVisit: { type: Date }, // Last login date on which problem solved
+  },
+
+  // Login history for heatmap
+  loginDays: [{
+    date: { type: Date, required: true },   // Date of login
+    count: { type: Number, default: 1 },    // Number of solution submission on this day (useful for heatmap)
+  }],
+
   // Badges
   badges: [{
     name: { type: String },  // Name of the badge
@@ -40,6 +49,12 @@ const userSchema = new mongoose.Schema({
   // Timestamps
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now },
+});
+
+// Middleware to update the updatedAt field on each document update
+userSchema.pre('save', function (next) {
+  this.updatedAt = Date.now();
+  next();
 });
 
 module.exports = mongoose.model('User', userSchema);

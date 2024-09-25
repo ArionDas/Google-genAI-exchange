@@ -5,6 +5,10 @@ import { Tooltip } from '@/components/ui/tooltip';
 import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
 import { Flame, Trophy } from 'lucide-react';
+import CalendarHeatmap from 'react-calendar-heatmap';
+import 'react-calendar-heatmap/dist/styles.css';
+
+
 
 const TopicProgress = ({ topic, quizzesTaken }) => (
   <div className="mb-4">
@@ -21,8 +25,8 @@ const ProfilePage = () => {
   const [email, setEmail] = useState('');
   const [dsaTopicsCovered, setDsaTopicsCovered] = useState({});
   const [streakDays, setStreakDays] = useState(0);
-  const [badges, setBadges] = useState([]);
-  const [user, setUser] = useState(null);
+
+  const [heatmapData, setHeatmapData] = useState([]);
 
   useEffect(() => {
     fetchUserData();
@@ -30,30 +34,43 @@ const ProfilePage = () => {
 
   const fetchUserData = async () => {
     try {
+      // Fetch user data from localStorage
       const userDataString = localStorage.getItem('user');
       if (!userDataString) {
         console.log('No user data in localStorage');
         return;
       }
   
+      // Parse the user data from localStorage
       const userData = JSON.parse(userDataString);
       console.log('User data from localStorage:', userData);
   
-      setUser(userData); // Set user state, but don't rely on it immediately
-  
-      if (!userData.id) {
-        console.log('User ID not found in localStorage data');
-        return;
-      }
-  
+      // Fetch user data from the backend
       const response = await fetch(`${import.meta.env.VITE_API_URL}/api/auth/user/${userData.id}`);
       const data = await response.json();
   
+      // Check if data is successfully fetched
+      if (!response.ok) {
+        console.error('Failed to fetch user data:', data.message);
+        return;
+      }
+
+      console.log("Profile data", data);
+  
+      // Set state with the fetched data
       setName(data.name);
       setEmail(data.email);
-      setDsaTopicsCovered(data.dsaTopicsCovered);
-      setStreakDays(data.streakDays);
-      setBadges(data.badges);
+      setDsaTopicsCovered(data.dsaTopicsCovered || {});
+      setStreakDays(data.streak.count || 0);
+  
+      // Set the activity log data for heatmap from loginDays
+      const loginDays = data.loginDays || [];
+      const formattedHeatmapData = loginDays.map((log) => ({
+        date: log.date.split('T')[0], // Format date to YYYY-MM-DD
+        count: log.count,
+      }));
+      setHeatmapData(formattedHeatmapData);
+  
     } catch (error) {
       console.error('Error fetching user data:', error);
     }
@@ -69,7 +86,7 @@ const ProfilePage = () => {
     return chunks;
   };
 
-  const topicColumns = chunkTopics(dsaTopicsCovered, 5); // Divide into 3 columns of 5 topics each
+  const topicColumns = chunkTopics(dsaTopicsCovered, 5); // Divide into columns of 5 topics each
 
   return (
     <div className="container mx-auto p-4 sm:p-8 bg-gray-50 min-h-screen">
@@ -102,6 +119,29 @@ const ProfilePage = () => {
                   </div>
                 ))}
               </div>
+              <div className="mt-8">
+                <h3 className="text-xl font-semibold mb-4">Activity Heatmap</h3>
+                <div className="overflow-auto">
+                  <CalendarHeatmap
+                    startDate={new Date(new Date().setFullYear(new Date().getFullYear() - 1))}
+                    endDate={new Date()}
+                    values={heatmapData}
+                    classForValue={(value) => {
+                      if (!value) {
+                        return 'color-empty';
+                      }
+                      return `color-scale-${value.count}`;
+                    }}
+                    tooltipDataAttrs={(value) => {
+                      return {
+                        'data-tip': `${value.date}: ${value.count || 0} activities`,
+                      };
+                    }}
+                    showWeekdayLabels={true}
+                    gutterSize={4}
+                  />
+                </div>
+              </div>
             </div>
             <div>
               <h3 className="text-xl font-semibold mb-4 flex items-center">
@@ -112,16 +152,41 @@ const ProfilePage = () => {
                 <p className="text-gray-600 text-sm mt-2">Consecutive Active Days</p>
               </div>
 
+             
               <h3 className="text-xl font-semibold mb-4">Badges</h3>
-              <div className="flex flex-wrap gap-4 justify-center">
-                {badges.map((badge, index) => (
-                  <Tooltip key={index} content={badge.name}>
-                    <div className="bg-gray-100 p-2 rounded-full hover:bg-gray-200 transition-colors">
-                      <img src={badge.imageUrl} alt={badge.name} className="w-12 h-12" />
+                    <div className="flex flex-wrap gap-4 justify-center">
+                      {streakDays >= 0 && (
+                        <div className="flex justify-center">
+                          <img src="https://i.ibb.co/Tvwh7ks/day0.png" alt="day0" className="w-20 h-20" />
+                        </div>
+                      )}
+                      {streakDays >= 3 && (
+                        <div className="flex justify-center">
+                          <img src="https://i.ibb.co/1ftkZL5/day3.png" alt="day3" className="w-20 h-20" />
+                        </div>
+                      )}
+                      {streakDays >= 15 && (
+                        <div className="flex justify-center">
+                          <img src="https://i.ibb.co/P5ysHf5/day15.png" alt="day15" className="w-20 h-20" />
+                        </div>
+                      )}
+                      {streakDays >= 30 && (
+                        <div className="flex justify-center">
+                          <img src="https://i.ibb.co/SdgX5MY/day30.png" alt="day30" className="w-20 h-20" />
+                        </div>
+                      )}
+                      {streakDays >= 50 && (
+                        <div className="flex justify-center">
+                          <img src="https://i.ibb.co/YXxDRgS/day50.png" alt="day50" className="w-20 h-20" />
+                        </div>
+                      )}
+                      {streakDays >= 100 && (
+                        <div className="flex justify-center">
+                          <img src="https://i.ibb.co/J3TXR53/day100.png" alt="day100" className="w-20 h-20" />
+                        </div>
+                      )}
                     </div>
-                  </Tooltip>
-                ))}
-              </div>
+
             </div>
           </div>
         </CardContent>

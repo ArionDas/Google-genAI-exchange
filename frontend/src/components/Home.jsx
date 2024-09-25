@@ -76,6 +76,18 @@ function Home() {
         </Card>
         </Link>
 
+        <Link to="/multimodal-chat" className="block">
+        <Card className="cursor-pointer hover:shadow-lg transition-shadow duration-300">
+          <CardHeader>
+            <CardTitle>Multimodal Chat</CardTitle>
+            <CardDescription>Chat with Image,Audio and Videp</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <p>Create personalized multiple-choice questions on various topics to test your knowledge and enhance your learning.</p>
+          </CardContent>
+        </Card>
+        </Link>
+
       </section>
 
       <section className="mt-16 text-center">

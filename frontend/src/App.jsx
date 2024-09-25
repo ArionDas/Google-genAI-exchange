@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { BrowserRouter as Router, Route, Routes, Link, Navigate } from 'react-router-dom'
 import { Button } from "./components/ui/button"
 import Home from './components/Home'
@@ -13,6 +13,7 @@ import AIChat from './components/AIChat'
 import MCQGenerator from './components/MCQGenerator'
 import ResourcesDisplay from './components/ResourcesDisplay'
 import ProfilePage from './components/ProfilePage'
+import MultimodalChat from './components/MultiModalChat'
 
 // Create a client
 const queryClient = new QueryClient();
@@ -25,6 +26,7 @@ function App() {
   const handleLogout = () => {
     setUser(null)
   }
+
 
   return (
     <QueryClientProvider client={queryClient}>
@@ -52,11 +54,11 @@ function App() {
             </nav>
           </header>
 
-          <main className="container mx-auto mt-16 px-4">
+          <main className="m-2">
             <Routes>
               <Route path="/" element={<Home />} />
               <Route path="/login" element={<Login user={user} setUser={setUser} />} />
-              <Route path="/signup" element={<Signup setUser={setUser} />} />
+              <Route path="/signup" element={<Signup user={user} setUser={setUser} />} />
               <Route path="/algorithms" element={<AlgorithmList />} />
               <Route path="/algorithm/:algoName" element={<AlgorithmEditor />} />
               <Route path="/code-editor" element={<CodeEditor />} />
@@ -65,6 +67,7 @@ function App() {
               <Route path="/mcq-generator" element={<MCQGenerator />} />
               <Route path="/resources" element={<ResourcesDisplay />} />
               <Route path="/profile" element={<ProfilePage></ProfilePage>} />
+              <Route path='multimodal-chat' element={<MultimodalChat></MultimodalChat>} />
             </Routes>
           </main>
 

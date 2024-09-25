@@ -7,7 +7,7 @@ import { Button } from "./ui/button"
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "./ui/form"
 import { Input } from "./ui/input"
 import Spinner from "./ui/Spinner"
-import axios from 'axios' // Add this import
+import axios from 'axios' 
 
 const schema = yup.object().shape({
   name: yup.string().required(),
@@ -16,7 +16,7 @@ const schema = yup.object().shape({
   confirmPassword: yup.string().oneOf([yup.ref('password'), null], 'Passwords must match'),
 })
 
-function Signup({ setUser }) {
+function Signup({ user,setUser }) {
   const [error, setError] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const navigate = useNavigate()
@@ -61,6 +61,13 @@ function Signup({ setUser }) {
       if (response.data.user) {
         setUser(response.data.user);
         localStorage.setItem('token', response.data.token);
+        const userInfo = {
+          id: user.id,
+          name: user.name,
+          email: user.email
+        };
+        localStorage.setItem('user', JSON.stringify(userInfo));
+        
         navigate('/');
       } else {
         setError('Registration failed. Please try again.');
