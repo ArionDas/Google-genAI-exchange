@@ -24,9 +24,13 @@ router.post('/run', async (req, res) => {
   }[language] || 'txt';
 
   const fileName = `temp_${Date.now()}.${fileExtension}`;
-  const filePath = path.join(__dirname, '..', 'temp', fileName);
+  const tempDir = path.join(__dirname, '..', 'temp');
+  const filePath = path.join(tempDir, fileName);
 
   try {
+    // Ensure the temp directory exists
+    await fs.mkdir(tempDir, { recursive: true });
+
     // Write the code to a temporary file
     await fs.writeFile(filePath, code);
 
@@ -46,7 +50,7 @@ router.post('/run', async (req, res) => {
       res.json({ output: stdout });
     });
   } catch (error) {
-    console.log(error);
+    console.error('Error:', error);
     res.status(500).json({ error: 'Failed to execute code' });
   }
 });
