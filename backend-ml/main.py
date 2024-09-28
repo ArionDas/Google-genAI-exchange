@@ -16,7 +16,7 @@ import tempfile
 from GenMCQ import generate_mcqs_with_llm, generate_mcqs_with_google_search, generate_report
 from Resources import searchResources
 from fastapi.responses import FileResponse, JSONResponse
-from multimodelHelper import voice_input, llm_model_audio, llm_model_image, llm_model_video, text_to_speech
+from multimodelHelper import llm_model_audio, llm_model_image, llm_model_video, text_to_speech
 import uvicorn
 
 # Initialize FastAPI app
@@ -269,4 +269,4 @@ def download_audio():
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 8000))
-    uvicorn.run("main:app", host="0.0.0.0", port=port, reload=True)
+    uvicorn.run(app, host="0.0.0.0", port=port)

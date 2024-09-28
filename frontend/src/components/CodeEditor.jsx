@@ -34,7 +34,10 @@ function CodeEditor() {
   const handleRunCode = async () => {
     setIsLoading(true);
     try {
-      const response = await axios.post('http://localhost:5000/api/code/run', { code, language });
+      const uri = `${import.meta.env.VITE_API_URL}/api/code/run`;
+      console.log('API URL:', uri);
+
+      const response = await axios.post(uri, { code, language });
       setOutput(response.data.output);
     } catch (error) {
       setOutput('Error: ' + (error.response?.data?.error || error.message));
