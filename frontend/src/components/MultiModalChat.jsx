@@ -15,7 +15,7 @@ function MultiModalChat() {
   const [isLoading, setIsLoading] = useState(false);
   const fileInputRef = useRef(null);
 
-  const prefixUrl = `${import.meta.env.VITE_BACKEND_ML_URL}`;
+  const prefixUrl = `${import.meta.env.VITE_API_URL}` + '/api/multimodel';
 
   const handleSubmit = async (type) => {
     setIsLoading(true);

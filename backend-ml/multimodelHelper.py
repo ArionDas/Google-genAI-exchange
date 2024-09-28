@@ -51,6 +51,7 @@ GOOGLE_API_KEY = os.getenv('GOOGLE_API_KEY')
 # Function to generate response from LLM model for voice chat
 def llm_model_audio(user_text):
     genai.configure(api_key=GOOGLE_API_KEY)
+
     model = genai.GenerativeModel(model_name='gemini-1.5-pro')
     prompt1 = """
     You are a helpful assistant named 'ShauryaNova' developed by Ayush Shaurya Jha. 
