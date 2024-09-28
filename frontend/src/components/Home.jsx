@@ -67,7 +67,7 @@ function Home() {
         <Link to="/mcq-generator" className="block">
         <Card className="cursor-pointer hover:shadow-lg transition-shadow duration-300">
           <CardHeader>
-            <CardTitle>MCQ Generator</CardTitle>
+            <CardTitle>Evaluate Yourself</CardTitle>
             <CardDescription>Generate custom multiple-choice questions</CardDescription>
           </CardHeader>
           <CardContent>

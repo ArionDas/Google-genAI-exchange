@@ -12,7 +12,7 @@ const languages = [
 ];
 
 function CodeEditor() {
-  const [code, setCode] = useState('// Write your code here\n');
+  const [code, setCode] = useState('');
   const [output, setOutput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [language, setLanguage] = useState('python');
