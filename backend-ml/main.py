@@ -1,5 +1,6 @@
 from fastapi import FastAPI, HTTPException, Query, Body, UploadFile, File, Form
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 from typing import List, Dict, Union
 from langchain_core.prompts import ChatPromptTemplate
@@ -31,7 +32,12 @@ app.add_middleware(
         "https://google-gen-ai-exchange-git-main-irfaniiitrs-projects.vercel.app",
         "https://google-genai-exchange-1.onrender.com",
         "https://google-gen-ai-exchange.vercel.app",
-        "https://google-genai-exchange-1.onrender.com"
+        "https://google-genai-exchange-1.onrender.com",
+        "https://vercel.com/irfaniiitrs-projects/google-gen-ai-exchange/FAaGXDC1D8MfjhBtgcU52JQiM8zY",
+        "https://google-gen-ai-exchange.vercel.app/",
+        "https://google-gen-ai-exchange-irfaniiitrs-projects.vercel.app/",
+        "https://google-gen-ai-exchange-git-main-irfaniiitrs-projects.vercel.app/",
+        "https://google-gen-ai-exchange.vercel.app/multimodal-chat"
     ],
     allow_credentials=True,
     allow_methods=["*"],
@@ -228,6 +234,7 @@ async def image_query(
     print(f"Received image query: {query_text}")
     # Save the uploaded image
     image_path = f"temp_image.{image.filename.split('.')[-1]}"
+    print(image_path)
     with open(image_path, "wb") as f:
         f.write(await image.read())
 
@@ -237,9 +244,15 @@ async def image_query(
     
     # Convert response to speech and return it
     text_to_speech(response)
-    response = JSONResponse(content={"text_response": response}, status_code=200)
-    response.headers["Access-Control-Allow-Origin"] = "*"
-    return response
+    return JSONResponse(
+        content={"text_response": response},
+        status_code=200,
+        headers={
+            "Access-Control-Allow-Origin": "*",
+            "Access-Control-Allow-Methods": "POST, OPTIONS",
+            "Access-Control-Allow-Headers": "Content-Type",
+        }
+    )
 
 # Video + Text + Voice Query Endpoint
 @app.post("/video-query")
@@ -257,20 +270,54 @@ async def video_query(
     
     # Convert response to speech and return it
     text_to_speech(response)
-    response = JSONResponse(content={"text_response": response}, status_code=200)
-    response.headers["Access-Control-Allow-Origin"] = "*"
-    return response
+    return JSONResponse(
+        content={"text_response": response},
+        status_code=200,
+        headers={
+            "Access-Control-Allow-Origin": "*",
+            "Access-Control-Allow-Methods": "POST, OPTIONS",
+            "Access-Control-Allow-Headers": "Content-Type",
+        }
+    )
 
 # Endpoint to download the generated speech file
 @app.get("/download-audio")
 def download_audio():
     audio_file_path = "speech.mp3"
     if os.path.exists(audio_file_path):
-        response = FileResponse(path=audio_file_path, media_type='audio/mp3', filename="speech.mp3")
-        response.headers["Access-Control-Allow-Origin"] = "*"
-        return response
-    return JSONResponse(content={"error": "Audio file not found"}, status_code=404)
+        return FileResponse(
+            path=audio_file_path,
+            media_type='audio/mp3',
+            filename="speech.mp3",
+            headers={
+                "Access-Control-Allow-Origin": "*",
+                "Access-Control-Allow-Methods": "GET, OPTIONS",
+                "Access-Control-Allow-Headers": "Content-Type",
+            }
+        )
+    return JSONResponse(
+        content={"error": "Audio file not found"},
+        status_code=404,
+        headers={
+            "Access-Control-Allow-Origin": "*",
+            "Access-Control-Allow-Methods": "GET, OPTIONS",
+            "Access-Control-Allow-Headers": "Content-Type",
+        }
+    )
 
+# Add OPTIONS handlers for the multimodal endpoints
+@app.options("/image-query")
+@app.options("/video-query")
+@app.options("/download-audio")
+async def options_handler():
+    return JSONResponse(
+        content={"message": "OK"},
+        headers={
+            "Access-Control-Allow-Origin": "*",
+            "Access-Control-Allow-Methods": "POST, GET, OPTIONS",
+            "Access-Control-Allow-Headers": "Content-Type",
+        }
+    )
 
 # To run the server: uvicorn main:app --reload
 

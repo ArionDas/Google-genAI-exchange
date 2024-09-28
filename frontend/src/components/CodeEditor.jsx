@@ -6,7 +6,6 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from ".
 import axios from 'axios';
 
 const languages = [
-  { value: 'javascript', label: 'JavaScript' },
   { value: 'python', label: 'Python' },
   { value: 'java', label: 'Java' },
   { value: 'cpp', label: 'C++' },
@@ -16,7 +15,7 @@ function CodeEditor() {
   const [code, setCode] = useState('// Write your code here\n');
   const [output, setOutput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [language, setLanguage] = useState('javascript');
+  const [language, setLanguage] = useState('python');
 
   const handleEditorChange = (value) => {
     setCode(value);
