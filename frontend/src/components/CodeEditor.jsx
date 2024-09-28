@@ -36,8 +36,13 @@ function CodeEditor() {
     try {
       const uri = `${import.meta.env.VITE_API_URL}/api/code/run`;
       console.log('API URL:', uri);
+      const config = {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      };
 
-      const response = await axios.post(uri, { code, language });
+      const response = await axios.post(uri, { code, language },config);
       setOutput(response.data.output);
     } catch (error) {
       setOutput('Error: ' + (error.response?.data?.error || error.message));

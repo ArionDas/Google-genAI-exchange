@@ -35,7 +35,8 @@ function MultiModalChat() {
 
     const uri = `${prefixUrl}/${type}-query`;
     const config = {
-      headers: { 'Content-Type': 'multipart/form-data' }
+      headers: { 'Content-Type': 'multipart/form-data'},
+      
     };
 
     try {
