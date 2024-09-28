@@ -1,4 +1,4 @@
-import speech_recognition as sr
+# import speech_recognition as sr
 import google.generativeai as genai
 from dotenv import load_dotenv
 import os
@@ -15,38 +15,38 @@ load_dotenv()
 GOOGLE_API_KEY = os.getenv('GOOGLE_API_KEY')
 
 # Function to handle voice input using a file
-def voice_input(audio_path):
-    try:
-        # Convert WebM to WAV
-        audio = AudioSegment.from_file(audio_path, format="webm")
-        with tempfile.NamedTemporaryFile(delete=False, suffix=".wav") as temp_wav_file:
-            wav_path = temp_wav_file.name
-            audio.export(wav_path, format="wav")
+# def voice_input(audio_path):
+#     try:
+#         # Convert WebM to WAV
+#         audio = AudioSegment.from_file(audio_path, format="webm")
+#         with tempfile.NamedTemporaryFile(delete=False, suffix=".wav") as temp_wav_file:
+#             wav_path = temp_wav_file.name
+#             audio.export(wav_path, format="wav")
 
-        print(f"WAV file created at: {wav_path}")
+#         print(f"WAV file created at: {wav_path}")
 
-        r = sr.Recognizer()
-        with sr.AudioFile(wav_path) as source:
-            audio_data = r.record(source)
-        try:
-            text = r.recognize_google(audio_data)
-            print("Transcribed: ", text)
-            return text
-        except sr.UnknownValueError:
-            print("Sorry, could not understand the audio")
-            return "Could not understand the audio"
-        except sr.RequestError as e:
-            print(f"Error with Google Speech Recognition service: {e}")
-            return "Error with speech recognition service"
-    except Exception as e:
-        print(f"Error processing audio: {str(e)}")
-        return f"Error processing audio: {str(e)}"
-    finally:
-        # Clean up temporary files
-        try:
-            os.unlink(wav_path)
-        except:
-            pass
+#         r = sr.Recognizer()
+#         with sr.AudioFile(wav_path) as source:
+#             audio_data = r.record(source)
+#         try:
+#             text = r.recognize_google(audio_data)
+#             print("Transcribed: ", text)
+#             return text
+#         except sr.UnknownValueError:
+#             print("Sorry, could not understand the audio")
+#             return "Could not understand the audio"
+#         except sr.RequestError as e:
+#             print(f"Error with Google Speech Recognition service: {e}")
+#             return "Error with speech recognition service"
+#     except Exception as e:
+#         print(f"Error processing audio: {str(e)}")
+#         return f"Error processing audio: {str(e)}"
+#     finally:
+#         # Clean up temporary files
+#         try:
+#             os.unlink(wav_path)
+#         except:
+#             pass
 
 # Function to generate response from LLM model for voice chat
 def llm_model_audio(user_text):

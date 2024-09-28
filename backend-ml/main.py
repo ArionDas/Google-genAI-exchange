@@ -190,34 +190,34 @@ async def search_query(payload: SearchQuery):
 
  
 # Voice Chat Endpoint
-@app.post("/voice-chat")
-async def voice_chat(audio: UploadFile = File(...)):
-    try:
-        # Create a temporary file
-        with tempfile.NamedTemporaryFile(delete=False, suffix=".webm") as temp_file:
-            # Write the uploaded audio to the temporary file
-            temp_file.write(await audio.read())
-            temp_file_path = temp_file.name
+# @app.post("/voice-chat")
+# async def voice_chat(audio: UploadFile = File(...)):
+#     try:
+#         # Create a temporary file
+#         with tempfile.NamedTemporaryFile(delete=False, suffix=".webm") as temp_file:
+#             # Write the uploaded audio to the temporary file
+#             temp_file.write(await audio.read())
+#             temp_file_path = temp_file.name
 
-        print(f"Temporary file created at: {temp_file_path}")
+#         print(f"Temporary file created at: {temp_file_path}")
         
-        # Process the audio file
-        text = voice_input(temp_file_path)
-        print(f"Transcribed text: {text}")
+#         # Process the audio file
+#         text = voice_input(temp_file_path)
+#         print(f"Transcribed text: {text}")
         
-        response = llm_model_audio(text)
-        print(f"LLM response: {response}")
+#         response = llm_model_audio(text)
+#         print(f"LLM response: {response}")
         
-        # Convert response to speech and save the audio file
-        text_to_speech(response)
+#         # Convert response to speech and save the audio file
+#         text_to_speech(response)
         
-        # Clean up the temporary audio file
-        os.unlink(temp_file_path)
+#         # Clean up the temporary audio file
+#         os.unlink(temp_file_path)
         
-        return JSONResponse(content={"text_response": response}, status_code=200)
-    except Exception as e:
-        print(f"Error in voice chat: {str(e)}")
-        return JSONResponse(content={"error": str(e)}, status_code=500)
+#         return JSONResponse(content={"text_response": response}, status_code=200)
+#     except Exception as e:
+#         print(f"Error in voice chat: {str(e)}")
+#         return JSONResponse(content={"error": str(e)}, status_code=500)
 
 # Image + Text + Voice Query Endpoint
 @app.post("/image-query")
