@@ -30,7 +30,8 @@ app.add_middleware(
         "http://localhost:5173",
         "https://google-gen-ai-exchange-git-main-irfaniiitrs-projects.vercel.app",
         "https://google-genai-exchange-1.onrender.com",
-        "https://google-gen-ai-exchange.vercel.app"  # Add this line if it's your Vercel domain
+        "https://google-gen-ai-exchange.vercel.app",
+        "https://google-genai-exchange-1.onrender.com"
     ],
     allow_credentials=True,
     allow_methods=["*"],
@@ -236,7 +237,9 @@ async def image_query(
     
     # Convert response to speech and return it
     text_to_speech(response)
-    return JSONResponse(content={"text_response": response}, status_code=200)
+    response = JSONResponse(content={"text_response": response}, status_code=200)
+    response.headers["Access-Control-Allow-Origin"] = "*"
+    return response
 
 # Video + Text + Voice Query Endpoint
 @app.post("/video-query")
@@ -254,14 +257,18 @@ async def video_query(
     
     # Convert response to speech and return it
     text_to_speech(response)
-    return JSONResponse(content={"text_response": response}, status_code=200)
+    response = JSONResponse(content={"text_response": response}, status_code=200)
+    response.headers["Access-Control-Allow-Origin"] = "*"
+    return response
 
 # Endpoint to download the generated speech file
 @app.get("/download-audio")
 def download_audio():
     audio_file_path = "speech.mp3"
     if os.path.exists(audio_file_path):
-        return FileResponse(path=audio_file_path, media_type='audio/mp3', filename="speech.mp3")
+        response = FileResponse(path=audio_file_path, media_type='audio/mp3', filename="speech.mp3")
+        response.headers["Access-Control-Allow-Origin"] = "*"
+        return response
     return JSONResponse(content={"error": "Audio file not found"}, status_code=404)
 
 

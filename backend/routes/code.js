@@ -46,6 +46,7 @@ router.post('/run', async (req, res) => {
       res.json({ output: stdout });
     });
   } catch (error) {
+    console.log(error);
     res.status(500).json({ error: 'Failed to execute code' });
   }
 });

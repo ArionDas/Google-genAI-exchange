@@ -22,30 +22,25 @@ function MultiModalChat() {
     setResponse('');
     setAudioUrl('');
 
-    const formData = new FormData();
-    let endpoint = '';
-
-    if (type === 'image') {
-      formData.append('query_text', imageQuery);
-      endpoint = `${prefixUrl}/image-query`;
-    } else if (type === 'video') {
-      formData.append('query_text', videoQuery);
-      endpoint = `${prefixUrl}/video-query`;
-    }
-
     const file = fileInputRef.current.files[0];
     if (!file) {
       alert('Please select a file');
       setIsLoading(false);
       return;
     }
+
+    const formData = new FormData();
     formData.append(type, file);
+    formData.append('query_text', type === 'image' ? imageQuery : videoQuery);
+
+    const uri = `${prefixUrl}/${type}-query`;
+    const config = {
+      headers: { 'Content-Type': 'multipart/form-data' }
+    };
 
     try {
-      console.log(`Sending request to ${endpoint}`);
-      const { data } = await axios.post(endpoint, formData, {
-        headers: { 'Content-Type': 'multipart/form-data' },
-      });
+      console.log(`Sending request to ${uri}`);
+      const { data } = await axios.post(uri, formData, config);
       console.log('Response received:', data);
       setResponse(data.text_response);
       
