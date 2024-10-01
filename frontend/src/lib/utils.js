@@ -7,19 +7,23 @@ export function cn(...inputs) {
 
 
 export const topics = [
-  "Arrays",
-  "Strings",
-  "Linked Lists",
   "Stacks",
-  "Queues",
-  "Hash Tables",
-  "Trees",
-  "Heaps",
-  "Graphs",
-  "Dynamic Programming",
+  "Queue",
+  "LinkedList",
+  "Array",
+  "HashTable",
+  "Tree",
+  "Graph",
+  "Heap",
+  "SortingAlgorithms",
+  "SearchingAlgorithms",
+  "DynamicProgramming",
+  "GreedyAlgorithms",
   "Backtracking",
-  "Greedy Algorithms",
-  "Sorting Algorithms",
-  "Searching Algorithms",
-  "Bit Manipulation"
+  "BitManipulation",
+  "SegmentTree",
+  "Trie",
+  "UnionFind",
+  "TopologicalSort",
+  "KMPAlgorithm"
 ];

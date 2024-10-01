@@ -34,7 +34,7 @@ function App() {
         <div className="min-h-screen bg-gradient-to-b from-blue-100 to-white">
           <header className="p-5 bg-white shadow-md">
             <nav className="container mx-auto flex justify-between items-center">
-              <h1 className="text-2xl font-bold text-blue-600">Socrates Learning</h1>
+              <h1 className="text-2xl font-bold text-blue-600">Socratic Learning</h1>
               <div className="space-x-4">
                 <Link to="/"><Button variant="ghost">Home</Button></Link>
                 {user ? (

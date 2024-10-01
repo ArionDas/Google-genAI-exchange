@@ -31,6 +31,7 @@ const AIChat = () => {
 
     try {
       const prefixUrl = `${import.meta.env.VITE_BACKEND_ML_URL}`;
+      console.log("prefixUrl", prefixUrl);
       const response = await fetch(`${prefixUrl}/query`, {
         method: 'POST',
         headers: {
@@ -48,13 +49,23 @@ const AIChat = () => {
         }),
       });
 
+      console.log("response", response);
+
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
 
       const data = await response.json();
-      const aiResponse = { role: 'assistant', content: data.response };
-      setMessages(prevMessages => [...prevMessages, aiResponse]);
+      console.log("Ai response", data);
+      if(data.response.includes("Socratic Assistant")){
+        const aiResponse = { role: 'assistant', content: data.response.substring(19) };
+        setMessages(prevMessages => [...prevMessages, aiResponse]);
+      }
+      else{
+        const aiResponse = { role: 'assistant', content: data.response };
+        setMessages(prevMessages => [...prevMessages, aiResponse]);
+      }
+
     } catch (error) {
       console.error('Error fetching response:', error);
       const errorMessage = { role: 'assistant', content: 'Sorry, I encountered an error. Please try again.' };
@@ -91,6 +102,7 @@ const AIChat = () => {
       }
 
       const data = await response.json();
+    
       const searchResult = { role: 'assistant', content: data.response };
       setMessages(prevMessages => [...prevMessages, { role: 'user', content: `Search: ${input}` }, searchResult]);
       setInput('');
