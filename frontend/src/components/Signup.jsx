@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
 import * as yup from 'yup'
@@ -6,7 +6,8 @@ import { useNavigate } from 'react-router-dom'
 import { Button } from "./ui/button"
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "./ui/form"
 import { Input } from "./ui/input"
-import axios from 'axios' // Add this import
+import Spinner from "./ui/Spinner"
+import axios from 'axios' 
 
 const schema = yup.object().shape({
   name: yup.string().required(),
@@ -15,8 +16,9 @@ const schema = yup.object().shape({
   confirmPassword: yup.string().oneOf([yup.ref('password'), null], 'Passwords must match'),
 })
 
-function Signup({ setUser }) {
+function Signup({ user,setUser }) {
   const [error, setError] = useState('')
+  const [isLoading, setIsLoading] = useState(false)
   const navigate = useNavigate()
   const form = useForm({
     resolver: yupResolver(schema),
@@ -28,23 +30,53 @@ function Signup({ setUser }) {
     },
   })
 
+  useEffect(() => {
+    console.log('API URL:', import.meta.env.VITE_API_URL);
+  }, []);
+
   const onSubmit = async (data) => {
+    setIsLoading(true)
+    setError('')
     try {
-      const response = await axios.post(`${process.env.REACT_APP_API_URL}/api/auth/register`, {
+      const preUrl = import.meta.env.VITE_API_URL;
+      const uri = `${preUrl}/api/auth/register`;
+      console.log('API URL:', uri);
+
+      const config = {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      };
+
+      const body = JSON.stringify({
         name: data.name,
         email: data.email,
-        password: data.password
+        password: data.password,
       });
+
+      const response = await axios.post(uri, body, config);
+
+      console.log('Response:', response);
       
       if (response.data.user) {
         setUser(response.data.user);
         localStorage.setItem('token', response.data.token);
+        const userInfo = {
+          id: user.id,
+          name: user.name,
+          email: user.email
+        };
+        localStorage.setItem('user', JSON.stringify(userInfo));
+        
         navigate('/');
       } else {
         setError('Registration failed. Please try again.');
       }
     } catch (error) {
+      console.error('Error details:', error.response?.data || error.message);
       setError(error.response?.data?.message || 'An error occurred during registration.');
+    } finally {
+      setIsLoading(false)
     }
   }
 
@@ -106,7 +138,16 @@ function Signup({ setUser }) {
             )}
           />
           {error && <p className="text-red-500">{error}</p>}
-          <Button type="submit" className="w-full">Sign Up</Button>
+          <Button type="submit" className="w-full" disabled={isLoading}>
+            {isLoading ? (
+              <>
+                <Spinner />
+                <span className="ml-2">Signing up...</span>
+              </>
+            ) : (
+              'Sign Up'
+            )}
+          </Button>
         </form>
       </Form>
     </div>

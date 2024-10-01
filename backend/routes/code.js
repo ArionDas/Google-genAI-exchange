@@ -5,28 +5,47 @@ const fs = require('fs').promises;
 const path = require('path');
 
 const runCode = {
-  javascript: (filePath) => `node ${filePath}`,
   python: (filePath) => `python ${filePath}`,
-  java: (filePath) => `javac ${filePath} && java ${path.basename(filePath, '.java')}`,
+  java: (filePath) => {
+    const className = path.basename(filePath, '.java');
+    const dir = path.dirname(filePath);
+    return `javac ${filePath} && java -cp ${dir} ${className}`;
+  },
   cpp: (filePath) => {
     const outputPath = filePath.replace('.cpp', '');
     return `g++ ${filePath} -o ${outputPath} && ${outputPath}`;
   },
 };
 
+// Asynchronous function to extract the public class name from Java code
+async function extractClassName(code) {
+  const match = code.match(/public\s+class\s+(\w+)/);
+  return match ? match[1] : 'Main';
+}
+
 router.post('/run', async (req, res) => {
   const { code, language } = req.body;
   const fileExtension = {
-    javascript: 'js',
     python: 'py',
     java: 'java',
     cpp: 'cpp',
   }[language] || 'txt';
 
-  const fileName = `temp_${Date.now()}.${fileExtension}`;
-  const filePath = path.join(__dirname, '..', 'temp', fileName);
+  const tempDir = path.join(__dirname, '..', 'temp');
+  let filePath;
 
   try {
+    // Ensure the temp directory exists
+    await fs.mkdir(tempDir, { recursive: true });
+
+    if (language === 'java') {
+      const className = await extractClassName(code);
+      filePath = path.join(tempDir, `${className}.java`);
+    } else {
+      const fileName = `temp_${Date.now()}.${fileExtension}`;
+      filePath = path.join(tempDir, fileName);
+    }
+
     // Write the code to a temporary file
     await fs.writeFile(filePath, code);
 
@@ -46,6 +65,7 @@ router.post('/run', async (req, res) => {
       res.json({ output: stdout });
     });
   } catch (error) {
+    console.error('Error:', error);
     res.status(500).json({ error: 'Failed to execute code' });
   }
 });

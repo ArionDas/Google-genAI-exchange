@@ -18,7 +18,7 @@ function Home() {
   return (
     <>
       <section className="text-center mb-16">
-        <h2 className="text-4xl font-bold mb-4">Welcome to Socrates Learning</h2>
+        <h2 className="text-4xl font-bold mb-4">Welcome to Socratic Learning</h2>
         <p className="text-xl text-gray-600 mb-8">Discover the power of innovative education in Sorting Algorithms</p>
         <div className="space-x-4">
           <Link to="/code-editor">
@@ -31,7 +31,9 @@ function Home() {
       </section>
 
       <section className="grid md:grid-cols-3 gap-8 mb-16">
-        <Card>
+
+
+        {/* <Card>
           <CardHeader>
             <CardTitle>Personalized Learning</CardTitle>
             <CardDescription>Master sorting algorithms at your own pace</CardDescription>
@@ -39,7 +41,9 @@ function Home() {
           <CardContent>
             <p>Explore a variety of sorting algorithms, from basic to advanced. Our platform adapts to your learning style and progress.</p>
           </CardContent>
-        </Card>
+        </Card> */}
+
+
         <Link to="/visualizer/bubble-sort" className="block">
           <Card className="cursor-pointer hover:shadow-lg transition-shadow duration-300">
             <CardHeader>
@@ -47,7 +51,7 @@ function Home() {
               <CardDescription>Visualize the sorting process</CardDescription>
             </CardHeader>
             <CardContent>
-              <p>Practice implementing sorting algorithms in our interactive code editor. Visualize the sorting process and understand the mechanics behind each algorithm.</p>
+              <p> Visualize the sorting process and understand the mechanics behind each algorithm.</p>
             </CardContent>
           </Card>
         </Link>
@@ -55,11 +59,11 @@ function Home() {
         <Link to="/chat" className="block">
         <Card className="cursor-pointer hover:shadow-lg transition-shadow duration-300">
           <CardHeader>
-            <CardTitle>Chat with AI</CardTitle>
+            <CardTitle>Chat with Socratic Assistant</CardTitle>
             <CardDescription>Ask questions and get answers from our AI</CardDescription>
           </CardHeader>
           <CardContent>
-            <p>Get help with your coding questions, and get answers from our AI.</p>
+            <p>Get help with your coding questions, and get answers from our Socratic Assistant.</p>
           </CardContent>
         </Card>
         </Link>
@@ -67,11 +71,23 @@ function Home() {
         <Link to="/mcq-generator" className="block">
         <Card className="cursor-pointer hover:shadow-lg transition-shadow duration-300">
           <CardHeader>
-            <CardTitle>MCQ Generator</CardTitle>
+            <CardTitle>Evaluate Yourself</CardTitle>
             <CardDescription>Generate custom multiple-choice questions</CardDescription>
           </CardHeader>
           <CardContent>
             <p>Create personalized multiple-choice questions on various topics to test your knowledge and enhance your learning.</p>
+          </CardContent>
+        </Card>
+        </Link>
+
+        <Link to="/multimodal-chat" className="block">
+        <Card className="cursor-pointer hover:shadow-lg transition-shadow duration-300">
+          <CardHeader>
+            <CardTitle>Multimodal Chat</CardTitle>
+            <CardDescription>Chat with Image, Audio and Video</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <p>Experience seamless communication with our Multimodal Chat, interacting through text, images, audio, and video.</p>
           </CardContent>
         </Card>
         </Link>

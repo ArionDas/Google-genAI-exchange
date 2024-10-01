@@ -1,175 +1,154 @@
 from fastapi import FastAPI, HTTPException
 import requests
-from langchain import PromptTemplate, LLMChain
-from langchain_community.llms import HuggingFaceHub
-from bs4 import BeautifulSoup
-import re
+import json
 import os
-
-# Initialize FastAPI app
 app = FastAPI()
 
-HUGGINGFACEHUB_API_TOKEN = os.getenv('HUGGINGFACEHUB_API_TOKEN')
+YOUTUBE_API_KEY = os.getenv('YOUTUBE_API_KEY')
 
 
-# Initialize the HuggingFaceHub LLM with the API token
-llm = HuggingFaceHub(
-    repo_id="gpt2",
-    model_kwargs={"temperature": 0.5, "max_length": 512},
-    huggingfacehub_api_token=HUGGINGFACEHUB_API_TOKEN  # Add your Hugging Face API token here
-)
-
-# Define allowed DSA-related terms
-ALLOWED_TERMS = [
-    'linked list', 'stack', 'queue', 'sorting', 'heap', 'binary tree',
-    'graph', 'searching', 'binary search', 'depth-first search',
-    'breadth-first search', 'trie', 'hash table', 'dynamic programming'
-]
-
-# Define patterns to identify educational content
-EDUCATIONAL_PATTERNS = [
-    re.compile(r'\b(data\s+structure|algorithm|tutorial|course|introduction|overview|example)\b', re.IGNORECASE)
-]
-
-# Check if the content is educational
-def is_educational(content):
-    return any(pattern.search(content) for pattern in  EDUCATIONAL_PATTERNS)
-
-# Wikipedia search function
-def wikipedia_search(query, num_results=3):
-    API_URL = "https://en.wikipedia.org/w/api.php"
-    params = {
-        "action": "query",
-        "list": "search",
-        "srsearch": query,
-        "format": "json",
-        "srlimit": num_results
-    }
-    response = requests.get(API_URL, params=params)
-    results = response.json()
-
-    search_results = []
-    if 'query' in results:
-        for item in results['query']['search']:
-            title = item['title']
-            snippet = item.get('snippet', 'No snippet available')
-            snippet_cleaned = BeautifulSoup(snippet, "html.parser").get_text()
-            pageid = item['pageid']
-            link = f"https://en.wikipedia.org/?curid={pageid}"
-            if any(term in title.lower() for term in ALLOWED_TERMS) and is_educational(snippet_cleaned):
-                search_results.append({
-                    'title': title,
-                    'link': link,
-                    'snippet': snippet_cleaned
-                })
-
-    return search_results
-
-# YouTube search function
-def youtube_search(query, num_results=3):
+# YouTube search function (using the YouTube Data API with API key)
+def youtube_searchs(query: str, num_results: int = 5) -> list:
     API_URL = "https://www.googleapis.com/youtube/v3/search"
+    API_KEY = YOUTUBE_API_KEY  # Your API key
     params = {
         "part": "snippet",
         "q": query,
         "type": "video",
         "maxResults": num_results,
-        "key": 'AIzaSyDHILp3O2gz_-ZfFZsXC_bxzElb9ZF1lnM'  # Replace with a valid YouTube API key
+        "key": API_KEY
     }
-    response = requests.get(API_URL, params=params)
-    results = response.json()
 
-    search_results = []
-    if 'items' in results:
-        for item in results['items']:
-            title = item['snippet']['title']
-            video_id = item['id']['videoId']
-            link = f"https://www.youtube.com/watch?v={video_id}"
-            description = item['snippet'].get('description', 'No description available')
-            if any(term in title.lower() for term in ALLOWED_TERMS) and is_educational(description):
-                search_results.append({
+    try:
+        response = requests.get(API_URL, params=params)
+        response.raise_for_status()
+        results = response.json()
+
+        youtube_results = []
+        if 'items' in results:
+            for item in results['items']:
+                title = item['snippet']['title']
+                video_id = item['id']['videoId']
+                link = f"https://www.youtube.com/watch?v={video_id}"
+                description = item['snippet'].get('description', 'No description available')
+
+                youtube_results.append({
                     'title': title,
                     'link': link,
                     'description': description
                 })
 
-    return search_results
+        return youtube_results
+    except requests.exceptions.RequestException as e:
+        print(f"Request error: {e}")
+        return []
 
-SERPAPI_KEY = os.getenv('SERPAPI_KEY')
 
-# Web search function
-def web_search(query, num_results=3):
+# GeeksForGeeks search function
+def geeks_for_geeks_search(query, api_key):
     API_URL = "https://serpapi.com/search.json"
     params = {
-        "q": query,
-        "num": num_results,
-        "api_key": SERPAPI_KEY  # Replace with a valid SerpAPI key
+        "q": f"site:geeksforgeeks.org {query}",
+        "num": 3,
+        "api_key": api_key
     }
-    response = requests.get(API_URL, params=params)
-    results = response.json()
 
-    search_results = []
-    if 'organic_results' in results:
+    try:
+        response = requests.get(API_URL, params=params)
+        response.raise_for_status()
+        results = response.json()
+
+        search_results = []
         for item in results['organic_results']:
             title = item['title']
             link = item['link']
             snippet = item.get('snippet', 'No snippet available')
-            if any(term in title.lower() for term in ALLOWED_TERMS) and is_educational(snippet):
-                search_results.append({
-                    'title': title,
-                    'link': link,
-                    'snippet': snippet
-                })
+            search_results.append({
+                'title': title,
+                'link': link,
+                'snippet': snippet
+            })
 
-    return search_results
+        return search_results
+    except requests.exceptions.RequestException as e:
+        print(f"Request error: {e}")
+        return []
 
-# LangChain prompt template for summarizing search results
-summary_template = """
-Summarize the following search results related to {query}:
 
-{results}
+MEDIUM_API_KEY = os.getenv('MEDIUM_API_KEY')
 
-Provide a concise summary of the key points and most relevant information.
-"""
+# Medium search function
+def medium_search(query):
+    API_URL = "https://serpapi.com/search.json"
+    params = {
+        "q": f"site:medium.com {query}",
+        "num": 3,
+        "api_key": MEDIUM_API_KEY
+    }
 
-summary_prompt = PromptTemplate(
-    input_variables=["query", "results"],
-    template=summary_template
-)
+    try:
+        response = requests.get(API_URL, params=params)
+        response.raise_for_status()
+        results = response.json()
 
-# Create LLMChain for summarization
-summary_chain = LLMChain(llm=llm, prompt=summary_prompt)
+        search_results = []
+        for item in results.get('organic_results', []):
+            title = item['title']
+            link = item['link']
+            snippet = item.get('snippet', 'No snippet available')
+            search_results.append({
+                'title': title,
+                'link': link,
+                'snippet': snippet
+            })
 
-# Main search and summarize function
-def search_and_summarize(query):
-    wikipedia_results = wikipedia_search(query)
-    youtube_results = youtube_search(query)
-    web_results = web_search(query)
+        return search_results
+    except requests.exceptions.RequestException as e:
+        print(f"Request error: {e}")
+        return []
+
+GEEKSFORGEEKS_API_KEY = os.getenv('GEEKSFORGEEKS_API_KEY')
+
+# Combined search function
+def searchResources(query):
+    medium_results = medium_search(query)
+    youtube_results = youtube_searchs(query)
+    
+    # Ask the user to enter the API key
+    api_key = GEEKSFORGEEKS_API_KEY
+    geeksforgeeks_results = geeks_for_geeks_search(query, api_key)
 
     combined_results = {
-        'wikipedia': wikipedia_results,
+        'medium': medium_results,
         'youtube': youtube_results,
-        'web': web_results
+        'geeksforgeeks': geeksforgeeks_results
     }
 
     if not any(combined_results.values()):
-        raise HTTPException(status_code=404, detail="No results found on any platform.")
+        return {"message": "No results found on any platform."}
 
-    # Prepare results for summarization
-    results_text = ""
-    for platform, results in combined_results.items():
-        results_text += f"\n{platform.capitalize()} Results:\n"
-        for result in results:
-            results_text += f"- {result['title']}\n  {result.get('snippet') or result.get('description')}\n"
-
-    # Generate summary using LangChain
-    summary = summary_chain.run(query=query, results=results_text)
-
-    return {
-        "results": combined_results,
-        "summary": summary
+    final_results = {
+        "results": {
+            "medium": {
+                "title": medium_results[0]['title'] if medium_results else "No Medium results",
+                "link": medium_results[0]['link'] if medium_results else ""
+            },
+            "youtube": {
+                "title": youtube_results[0]['title'] if youtube_results else "No YouTube results",
+                "link": youtube_results[0]['link'] if youtube_results else ""
+            },
+            "geeksforgeeks": {
+                "title": geeksforgeeks_results[0]['title'] if geeksforgeeks_results else "No GeeksforGeeks results",
+                "link": geeksforgeeks_results[0]['link'] if geeksforgeeks_results else ""
+            }
+        }
     }
 
+    return final_results
 
 
-# To run the FastAPI server, use the following command:
-# uvicorn myapp:app --reload
+
+
+
+# To run the FastAPI app, use the following command:
+# uvicorn your_script_name:app --reload

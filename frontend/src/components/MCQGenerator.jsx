@@ -6,6 +6,9 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent } from "@/components/ui/card";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { AlertCircle } from "lucide-react";
+import axios from 'axios';
+
+import { topics } from '@/lib/utils';
 
 const MCQGenerator = () => {
   const [topic, setTopic] = useState('');
@@ -22,18 +25,18 @@ const MCQGenerator = () => {
     setIsLoading(true);
     setError(null);
     try {
-      const response = await fetch('http://localhost:8000/generate-mcqs', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ topic, noq, level }),
-      });
+      const prefixUrl = `${import.meta.env.VITE_BACKEND_ML_URL}`;
+      const uri = `${prefixUrl}/generate-mcqs`;
+      const body = { topic, noq, level };
+      const config = {
+        headers: { 'Content-Type': 'application/json' }
+      };
+
+      console.log('MCQs request:', body);
+
+      const response = await axios.post(uri, body, config);
       
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.detail || 'Failed to generate MCQs');
-      }
-      
-      const data = await response.json();
+      const data = response.data;
       if (data.mcqs && data.mcqs.length > 0) {
         setMcqs(data.mcqs);
         setUserAnswers({});
@@ -44,7 +47,7 @@ const MCQGenerator = () => {
       }
     } catch (error) {
       console.error('Error generating MCQs:', error);
-      setError(error.message);
+      setError(error.response?.data?.detail || error.message || 'Failed to generate MCQs');
     } finally {
       setIsLoading(false);
     }
@@ -57,15 +60,53 @@ const MCQGenerator = () => {
     }));
   };
 
-  const calculateScore = () => {
+  // const calculateScore = () => {
+  //   let correctAnswers = 0;
+  //   mcqs.forEach((mcq, index) => {
+  //     if (userAnswers[index] === mcq.correct) {
+  //       correctAnswers++;
+  //     }
+  //   });
+  //   setScore(correctAnswers);
+  //   setStep(5);
+  // };
+
+  const calculateScore = async () => {
     let correctAnswers = 0;
+  
+    // Calculate the score
     mcqs.forEach((mcq, index) => {
       if (userAnswers[index] === mcq.correct) {
         correctAnswers++;
       }
     });
+  
     setScore(correctAnswers);
     setStep(5);
+  
+    // Fetch user details from localStorage
+    const storedUser = JSON.parse(localStorage.getItem('user'));
+  
+    try {
+      // Call the backend API to update the quiz count for the specific topic
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/auth/update-quizzes/${storedUser.id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ topic }), 
+      });
+  
+      const data = await response.json();
+  
+      if (response.ok) {
+        console.log('Quiz count updated:', data);
+      } else {
+        console.error('Error updating quiz count:', data.message);
+      }
+    } catch (error) {
+      console.error('Error:', error);
+    }
   };
 
   const renderStep = () => {
@@ -73,12 +114,15 @@ const MCQGenerator = () => {
       case 1:
         return (
           <div className="space-y-4">
-            <h2 className="text-xl font-semibold">Enter the topic for MCQs:</h2>
-            <Input
-              value={topic}
-              onChange={(e) => setTopic(e.target.value)}
-              placeholder="Enter topic"
-            />
+            <h2 className="text-xl font-semibold">Select the topic for MCQs:</h2>
+            <RadioGroup value={topic} onValueChange={(value) => setTopic(value)}>
+              {topics.map((topicItem, index) => (
+          <div key={index} className="flex items-center space-x-2">
+            <RadioGroupItem value={topicItem} id={`topic${index}`} />
+            <Label htmlFor={`topic${index}`}>{topicItem}</Label>
+          </div>
+              ))}
+            </RadioGroup>
             <Button onClick={() => setStep(2)} disabled={!topic}>
               Next
             </Button>
@@ -162,6 +206,37 @@ const MCQGenerator = () => {
           <div className="space-y-4">
             <h2 className="text-xl font-semibold">Your Score:</h2>
             <p className="text-lg">{`You answered ${score} out of ${mcqs.length} questions correctly.`}</p>
+            <div className="space-y-4">
+            <h2 className="text-xl font-semibold">Answer the MCQs:</h2>
+            {mcqs.map((mcq, index) => (
+              <Card key={index} className="mb-4">
+                   {/* <h1>{`hi: ${JSON.stringify(userAnswers)}`}</h1> */}
+                <CardContent className="p-4">
+                  <h3 className="text-lg font-semibold mb-2">{`Question ${index + 1}: ${mcq.question}`}</h3>
+                  <RadioGroup
+                    value={userAnswers[index]?.toString()}
+                  >
+                    {mcq.options.map((option, optionIndex) => (
+                      <div key={optionIndex} className="flex items-center space-x-2">
+                        <RadioGroupItem value={optionIndex.toString()} id={`q${index}o${optionIndex}`} />
+                        {optionIndex === mcq.correct &&   <Label  htmlFor={`q${index}o${optionIndex}`} style={{color: 'green'}}>{`${String.fromCharCode(65 + optionIndex)}. ${option}`}</Label>
+                         }
+                      
+
+{optionIndex !== mcq.correct &&  optionIndex===userAnswers[index] &&  <Label  htmlFor={`q${index}o${optionIndex}`} style={{color: 'red'}}>{`${String.fromCharCode(65 + optionIndex)}. ${option}`}</Label>
+                         }
+
+                          {optionIndex !== mcq.correct && optionIndex!==userAnswers[index] &&
+                        <Label  htmlFor={`q${index}o${optionIndex}`}>{`${String.fromCharCode(65 + optionIndex)}. ${option}`}</Label>
+                          }
+                      
+                </div>
+                    ))}
+                  </RadioGroup>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
             <Button onClick={() => setStep(1)}>Generate New MCQs</Button>
           </div>
         );

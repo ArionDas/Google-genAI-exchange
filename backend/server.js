@@ -16,12 +16,18 @@ mongoose.connect(process.env.MONGODB_URI)
 
 const authRoutes = require('./routes/auth');
 const codeRoutes = require('./routes/code');
-const codeTestRoutes = require('./routes/codeTest');
+const multimodelRoutes = require('./routes/multimodel');
+// const codeTestRoutes = require('./routes/codeTest');
 
 // Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/code', codeRoutes);
-app.use('/api/code', codeTestRoutes);
+app.use('/api/multimodel', multimodelRoutes);
+// app.use('/api/code', codeTestRoutes);
+
+app.get('/',(req,res)=>{
+  res.send('Hello World')
+})
 
 // Start server
 const PORT = process.env.PORT || 5000;

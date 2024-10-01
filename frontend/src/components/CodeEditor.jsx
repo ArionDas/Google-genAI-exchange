@@ -6,17 +6,16 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from ".
 import axios from 'axios';
 
 const languages = [
-  { value: 'javascript', label: 'JavaScript' },
   { value: 'python', label: 'Python' },
   { value: 'java', label: 'Java' },
   { value: 'cpp', label: 'C++' },
 ];
 
 function CodeEditor() {
-  const [code, setCode] = useState('// Write your code here\n');
+  const [code, setCode] = useState('');
   const [output, setOutput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [language, setLanguage] = useState('javascript');
+  const [language, setLanguage] = useState('python');
 
   const handleEditorChange = (value) => {
     setCode(value);
@@ -34,7 +33,15 @@ function CodeEditor() {
   const handleRunCode = async () => {
     setIsLoading(true);
     try {
-      const response = await axios.post('http://localhost:5000/api/code/run', { code, language });
+      const uri = `${import.meta.env.VITE_API_URL}/api/code/run`;
+      console.log('API URL:', uri);
+      const config = {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      };
+
+      const response = await axios.post(uri, { code, language },config);
       setOutput(response.data.output);
     } catch (error) {
       setOutput('Error: ' + (error.response?.data?.error || error.message));
