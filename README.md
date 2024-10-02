@@ -21,6 +21,11 @@ The platform architecture integrates AI-powered questioning with multimodal lear
 7. **Gamified Learning**: Motivational badges to encourage learning milestones.
 8. **`Motivational AI Assistant`**: Delivers daily motivational quotes to inspire students.
 
+### Current LLM Model : 
+- **`Framework`** : Groq
+- **`Model`** : LLama 3 70B
+
+
 ## In-Scope Features
 - **`AI Chat Assistant`**: Engages students through the Socratic method, enhancing critical thinking.
 - **`Multimodal Learning Support`**:
@@ -45,6 +50,35 @@ The platform architecture integrates AI-powered questioning with multimodal lear
 1. **`Collaborative Learning Features`**: Add forums, study groups, and peer-to-peer interaction tools.
 2. **`Integration with External Educational Platforms`**: Partner with established educational platforms for high-quality courses.
 3. **`Live Certified Courses`**: Provide live certified courses and expert-led learning opportunities.
+4. **`Gemini Model Integration`**: The platform plans to integrate the Gemini model as the central Large Language Model (LLM) for the application, enhancing its capability to handle complex queries, provide more nuanced responses, and support a wider variety of learning formats. This upgrade will ensure more accurate, contextually aware, and personalized responses for students.
+
+## Challenges Faced During Development
+
+1. **`JSON Response Issues from LLM`**:
+- *Problem*: Encountered inconsistencies in the JSON responses returned by the Language Model (LLM), which led to errors in data parsing.
+- *Solution*: Implemented additional validation checks to ensure the integrity of the JSON data. This involved logging unexpected responses for further analysis and adjusting the parsing logic accordingly.
+
+2. **`Gemini and Langchain Integration Challenges`**:
+- *Problem*: While integrating Gemini with Langchain agents, we encountered some technical challenges related to compatibility, which affected the smooth interaction between the two systems in our specific use case.
+- *Solution*: After careful consideration, we decided to temporarily explore alternative models that seamlessly integrated with Langchain agents for this phase of the project. We remain optimistic about future updates and enhancements in Gemini, and look forward to leveraging its powerful capabilities in upcoming versions as the ecosystem evolves.
+
+3. **`CORS Policy Issues`**:
+- *Problem*: Faced Cross-Origin Resource Sharing (CORS) issues that prevented the frontend from accessing backend APIs.
+- *Solution*: Configured the server to include the necessary CORS headers, allowing requests from the frontend domain. This involved modifying server settings and testing various configurations to ensure compatibility.
+
+4. **`Multimodal Chat Implementation`**:
+- *Problem*: Difficulty in integrating multimodal chat capabilities, which required handling different input types (text, images, etc.).
+- *Solution*: Conducted thorough research on available libraries and frameworks. After experimenting with several options, successfully integrated a suitable library that facilitated multimodal interactions.
+
+5. **`Heatmap Generation for Streak Days`**
+- *Problem*: Challenges in generating heatmaps to visualize user engagement over streak days, primarily due to a lack of clear documentation and examples.
+- *Solution*: Invested time in reading documentation and exploring various libraries. After testing multiple approaches, I found a library that met the project’s requirements and provided clear examples, leading to successful implementation.
+
+6. **`LangGraph Assistant`** : 
+
+- *Problem* : We wanted to have all our features ("chat with AI", "multimodal chat", "quiz", etc.) as nodes in our LangGraph agent. The purpose was to provide the user the freedom to navigate 
+   to any node from any node. 
+   Unfortunately, we encountered unprecedented errors during the development, and the documentation is not self-exhaustive to address the aforementioned issue.
 
 ## Installation
 
