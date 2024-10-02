@@ -88,3 +88,12 @@ The platform architecture integrates AI-powered questioning with multimodal lear
 
    ```bash
    git clone https://github.com/yourusername/socratic-learning.git
+
+2. Install the required dependencies:
+
+   ```bash
+   pip install -r requirements.txt
+
+3. You can access the live application via this link:
+
+   https://whimsical.com/google-gen-ai-exchange-CVsF2RV96CGFNi86h6o7Yq
