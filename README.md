@@ -51,6 +51,8 @@ The platform architecture integrates AI-powered questioning with multimodal lear
 2. **`Integration with External Educational Platforms`**: Partner with established educational platforms for high-quality courses.
 3. **`Live Certified Courses`**: Provide live certified courses and expert-led learning opportunities.
 4. **`Gemini Model Integration`**: The platform plans to integrate the Gemini model as the central Large Language Model (LLM) for the application, enhancing its capability to handle complex queries, provide more nuanced responses, and support a wider variety of learning formats. This upgrade will ensure more accurate, contextually aware, and personalized responses for students.
+5. **`Lang Graph Agent AI Assistant`**: We plan to add an AI agent using Lang Graph, making our application more robust and accessible for the user. This will help the user navigate to any feature from anywhere.
+6. **`Inference Time`**: Scalable architecture design to reduce inference time.
 
 ## Challenges Faced During Development
 
@@ -95,3 +97,6 @@ The platform architecture integrates AI-powered questioning with multimodal lear
 3. **`You can access the live application via this link`**:
 
    https://google-gen-ai-exchange.vercel.app/
+
+   (Demo Email : i2@gmail.com) <br>
+   (Demo password : 123456789)
