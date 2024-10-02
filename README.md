@@ -34,7 +34,8 @@ The platform architecture integrates AI-powered questioning with multimodal lear
 - **Activity Tracking and Heatmap**: Visualize engagement and monitor study habits.
 - **Gamified Learning with Achievement Badges**: Earn motivational badges to track learning progress:
   
-  ![Day 0 Badge](images/day0.png) ![Day 15 Badge]([images/day15.png](https://drive.google.com/file/d/1OXfkVtN3RZlAxuiFBIyCKd5YFdkTU5Im/view?usp=sharing)) ![Day 30 Badge](images/day30.png) ![Day 50 Badge](images/day50.png) ![Day 100 Badge](images/day100.png)
+![Day 0 Badge](./images/day0.png) ![Day 15 Badge](./images/day15.png) ![Day 30 Badge](./images/day30.png) ![Day 50 Badge](./images/day50.png) ![Day 100 Badge](./images/day100.png)
+
 
 - **Motivational AI Assistant**: Daily motivational quotes to keep students inspired.
 
