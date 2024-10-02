@@ -4,7 +4,7 @@
 Socratic Learning is an AI-powered educational platform designed to revolutionize learning through the Socratic method. The platform engages students with thought-provoking questions, promotes critical thinking, and provides a comprehensive learning environment using multimodal support, interactive tools, and personalized paths for continuous learning.
 
 ## Architecture
-![Architecture](images/architecture.png)
+![Architecture](https://github.com/ArionDas/Google-genAI-exchange/blob/05fc7788ce7dddf5dd5e29120f999e372043c789/visuals/Architecture.png)
 
 The platform architecture integrates AI-powered questioning with multimodal learning, real-time visualization, and performance tracking tools.
 
