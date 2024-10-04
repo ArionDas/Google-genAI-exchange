@@ -2,6 +2,16 @@
 ![Features](https://github.com/ArionDas/Google-genAI-exchange/blob/bb4c6ca1407283041541b79bab09e16bf32e461f/visuals/desk.jpg)
 ## Project Overview
 Socratic Learning is an AI-powered educational platform designed to revolutionize learning through the Socratic method. The platform engages students with thought-provoking questions, promotes critical thinking, and provides a comprehensive learning environment using multimodal support, interactive tools, and personalized paths for continuous learning.
+## Overview of Our Idea 
+Our application is an innovative Socratic learning platform designed to revolutionize education by providing personalized, 1:1 teaching experiences at scale. Leveraging advanced technologies, the platform utilizes an AI Chat Assistant that engages students through the Socratic method, guiding them with targeted questions to foster critical thinking and deeper understanding.
+
+Key features include multimodal learning support, allowing students to ask questions through images, videos, or text, alongside an integrated code editor for real-time coding and debugging. Our Resource Suggestion Engine curates relevant materials, while Interactive Visualization Tools dynamically illustrate complex concepts in data structures and algorithms.
+
+The platform also incorporates self-evaluation tools for customized testing and activity tracking to monitor student progress. With gamified learning elements, students earn badges for achievements, keeping them motivated.
+
+Looking ahead, we plan to introduce collaborative learning features like forums and study groups, integrate with external educational platforms for high-quality courses, and provide live certified courses led by experts. Additionally, we aim to integrate the Gemini model as our central Large Language Model for enhanced capabilities and personalized responses. We are also considering adding closed-source LLMs, which will be used for inference by deployed AWS GPUs upon funding, to make the AI Assistant even more robust. Future enhancements will include an AI assistant using Lang Graph for improved navigation and a scalable architecture design to reduce inference time.
+
+In a crowded ed-tech market, our solution stands out by seamlessly combining these features under one roof, emphasizing the Socratic approach to create a transformative and engaging learning experience.
 
 ## Architecture
 ![Architecture](https://github.com/ArionDas/Google-genAI-exchange/blob/05fc7788ce7dddf5dd5e29120f999e372043c789/visuals/Architecture.png)
