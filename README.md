@@ -108,5 +108,9 @@ The platform architecture integrates AI-powered questioning with multimodal lear
 
    https://google-gen-ai-exchange.vercel.app/
 
+4. **`Demo Video`**:
+
+   [Socratic Learning](https://drive.google.com/file/d/12_Ub1vCefJu5IYlumuuamY1mg8AquDbe/view?usp=sharing)  
+
    (Demo Email : i2@gmail.com) <br>
    (Demo password : 123456789)
