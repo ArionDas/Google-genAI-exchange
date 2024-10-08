@@ -28,7 +28,7 @@ The platform architecture integrates AI-powered questioning with multimodal lear
 4. **`Integrated Code Editor`**: An environment for coding, testing, and debugging in real-time.
 5. **`Self-Evaluation Tools`**: Customizable tests to focus on weak areas.
 6. **`Activity Tracking and Heatmap`**: Provides insights into student engagement and progress.
-7. **Gamified Learning**: Motivational badges to encourage learning milestones.
+7. **`Gamified Learning`**: Motivational badges to encourage learning milestones.
 8. **`Motivational AI Assistant`**: Delivers daily motivational quotes to inspire students.
 
 ### Current LLM Model : 
